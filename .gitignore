@@ -1,0 +1,15 @@
+node_modules/
+.env
+.env.local
+.env.production
+back/uploads/temp/*
+!back/uploads/temp/.gitkeep
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
+.env.docker
+.env.docker
+
+GUIDE-DEMARRAGE.md

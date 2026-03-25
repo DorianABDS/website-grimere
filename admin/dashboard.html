@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin Dashboard — Cédric Grimere</title>
+<meta name="robots" content="noindex, nofollow"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --noir:#0d0d0d;--charbon:#1a1a1a;--ardoise:#2c2c2c;
+  --cendre:#6b6b6b;--ivoire:#f5f0e8;--or:#c9a84c;--or-pale:#e8d5a3;
+  --success:rgba(74,222,128,.8);--warning:rgba(251,191,36,.8);--danger:rgba(239,68,68,.8);
+  --sidebar:240px;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--noir);font-family:'DM Sans',sans-serif;font-weight:300;color:var(--ivoire);display:flex}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:var(--noir)}
+::-webkit-scrollbar-thumb{background:var(--ardoise);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--or)}
+
+/* ══ SIDEBAR ══════════════════════════════════════════════════════════ */
+.sidebar{
+  width:var(--sidebar);min-height:100vh;background:var(--charbon);
+  border-right:1px solid var(--ardoise);display:flex;flex-direction:column;
+  position:fixed;top:0;left:0;bottom:0;z-index:50;transition:transform .3s;flex-shrink:0
+}
+.sidebar-logo{padding:1.75rem 1.5rem 1.5rem;border-bottom:1px solid var(--ardoise)}
+.sidebar-logo .cg{font-family:'Cormorant Garamond',serif;font-size:1.75rem;font-weight:300;letter-spacing:.12em;color:var(--ivoire)}
+.sidebar-logo .cg span{color:var(--or)}
+.sidebar-logo .admin-label{color:rgba(245,240,232,.3);font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;display:block;margin-top:.3rem}
+
+.nav{flex:1;padding:.75rem 0;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:.75rem;padding:.7rem 1.5rem;background:none;border:none;
+  color:rgba(245,240,232,.45);font-size:.82rem;cursor:pointer;transition:all .2s;text-align:left;
+  width:100%;border-left:2px solid transparent;font-family:'DM Sans',sans-serif;letter-spacing:.02em;
+  position:relative}
+.nav-item:hover{color:rgba(245,240,232,.8);background:rgba(255,255,255,.02)}
+.nav-item.active{color:var(--or);background:rgba(201,168,76,.07);border-left-color:var(--or)}
+.nav-icon{font-size:.95rem;width:20px;text-align:center;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--or);color:var(--noir);font-size:.6rem;font-weight:600;
+  padding:1px 6px;border-radius:10px;min-width:18px;text-align:center}
+.nav-badge.danger{background:var(--danger);color:#fff}
+
+.sidebar-profile{padding:1rem 1.25rem;border-top:1px solid var(--ardoise);display:flex;align-items:center;gap:.75rem}
+.profile-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid var(--ardoise);flex-shrink:0;background:var(--ardoise);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;color:var(--or);font-size:1rem}
+.profile-info{flex:1;overflow:hidden}
+.profile-name{color:var(--ivoire);font-size:.8rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.profile-email{color:rgba(245,240,232,.3);font-size:.65rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.logout-btn{background:none;border:none;color:rgba(245,240,232,.25);cursor:pointer;font-size:1rem;padding:.25rem;transition:color .2s;flex-shrink:0}
+.logout-btn:hover{color:var(--danger)}
+
+/* ══ MAIN ═════════════════════════════════════════════════════════════ */
+.main{margin-left:var(--sidebar);flex:1;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+
+/* Header mobile */
+.mobile-header{display:none;align-items:center;justify-content:space-between;padding:.85rem 1.25rem;
+  border-bottom:1px solid var(--ardoise);background:var(--charbon);position:sticky;top:0;z-index:40}
+.menu-btn{background:none;border:none;color:var(--ivoire);font-size:1.2rem;cursor:pointer;line-height:1}
+
+/* Contenu */
+.content{padding:2rem;flex:1}
+
+/* ══ PAGE HEADER ══════════════════════════════════════════════════════ */
+.page-header{margin-bottom:2rem;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--ivoire);line-height:1}
+.page-sub{color:rgba(245,240,232,.35);font-size:.8rem;margin-top:.35rem}
+.btn-gold{background:var(--or);color:var(--noir);border:none;padding:.65rem 1.4rem;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .2s}
+.btn-gold:hover{background:var(--or-pale)}
+.btn-outline-sm{background:none;border:1px solid var(--ardoise);color:rgba(245,240,232,.6);padding:.5rem 1rem;font-size:.72rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-outline-sm:hover{border-color:var(--or);color:var(--or)}
+
+/* ══ SECTION LABEL ════════════════════════════════════════════════════ */
+.section-label{color:rgba(245,240,232,.3);font-size:.65rem;letter-spacing:.28em;text-transform:uppercase;margin:1.75rem 0 .9rem;font-weight:400}
+
+/* ══ STAT CARDS ═══════════════════════════════════════════════════════ */
+.stats-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:.85rem}
+.stat-card{background:var(--charbon);border:1px solid var(--ardoise);padding:1.35rem 1.25rem;
+  cursor:pointer;transition:all .25s;position:relative;overflow:hidden}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(to right,transparent,var(--or),transparent);opacity:0;transition:opacity .3s}
+.stat-card:hover{border-color:rgba(201,168,76,.35);transform:translateY(-2px)}
+.stat-card:hover::before{opacity:1}
+.stat-val{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:300;color:var(--or);margin-bottom:.3rem;line-height:1}
+.stat-val.alert{color:#f87171}
+.stat-val.warning{color:#fbbf24}
+.stat-lbl{color:rgba(245,240,232,.55);font-size:.75rem}
+.stat-sub{color:rgba(245,240,232,.28);font-size:.68rem;margin-top:.2rem}
+
+/* ══ CHART ════════════════════════════════════════════════════════════ */
+.chart-box{background:var(--charbon);border:1px solid var(--ardoise);padding:1.5rem}
+.chart-title{color:rgba(245,240,232,.4);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:1.25rem}
+.chart-wrap{position:relative;height:200px}
+
+/* ══ DERNIÈRE PHOTO ═══════════════════════════════════════════════════ */
+.last-photo-box{background:var(--charbon);border:1px solid var(--ardoise);padding:1.25rem 1.5rem;display:flex;align-items:center;gap:1rem}
+.last-photo-img{width:56px;height:56px;object-fit:cover;flex-shrink:0;border:1px solid var(--ardoise)}
+.last-photo-tag{color:var(--or);font-size:.82rem;margin-bottom:.2rem}
+.last-photo-date{color:rgba(245,240,232,.35);font-size:.72rem}
+
+/* ══ TABLE MESSAGES ═══════════════════════════════════════════════════ */
+.messages-table{width:100%;border-collapse:collapse}
+.messages-table th{color:rgba(245,240,232,.3);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;padding:.65rem .85rem;text-align:left;border-bottom:1px solid var(--ardoise);font-weight:400}
+.messages-table td{padding:.75rem .85rem;border-bottom:1px solid rgba(44,44,44,.5);font-size:.82rem;vertical-align:middle}
+.messages-table tr:hover td{background:rgba(255,255,255,.015)}
+.msg-nom{color:var(--ivoire);font-weight:500}
+.msg-unread .msg-nom{color:var(--or)}
+.msg-unread-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--or);margin-right:.4rem;vertical-align:middle}
+.msg-presta{color:rgba(245,240,232,.4);font-size:.75rem}
+.msg-apercu{color:rgba(245,240,232,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+.msg-date{color:rgba(245,240,232,.3);font-size:.72rem;white-space:nowrap}
+.tag-pill{display:inline-block;padding:.2rem .6rem;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;border-radius:2px}
+.tag-pill.attente{background:rgba(251,191,36,.1);color:#fcd34d;border:1px solid rgba(251,191,36,.25)}
+.tag-pill.approuve{background:rgba(74,222,128,.1);color:#86efac;border:1px solid rgba(74,222,128,.25)}
+
+/* ══ AVIS CARDS ═══════════════════════════════════════════════════════ */
+.avis-mini-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.75rem}
+.avis-mini{background:var(--charbon);border:1px solid var(--ardoise);padding:1.1rem 1.25rem;transition:border-color .2s}
+.avis-mini:hover{border-color:rgba(201,168,76,.3)}
+.avis-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem}
+.avis-nom{font-size:.85rem;color:var(--ivoire);font-weight:500}
+.avis-stars{color:var(--or);font-size:.85rem;letter-spacing:.08em}
+.avis-presta{color:rgba(245,240,232,.35);font-size:.72rem;margin-bottom:.5rem}
+.avis-texte{color:rgba(245,240,232,.6);font-size:.8rem;font-style:italic;line-height:1.55;margin-bottom:.75rem}
+.avis-actions{display:flex;gap:.5rem}
+.btn-approve{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:#86efac;padding:.3rem .75rem;font-size:.68rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-approve:hover{background:rgba(74,222,128,.2)}
+.btn-refuse{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5;padding:.3rem .75rem;font-size:.68rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+
+/* ══ GALERIE MINI APERÇU ══════════════════════════════════════════════ */
+.galerie-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:.5rem}
+.galerie-thumb{aspect-ratio:1;overflow:hidden;position:relative;background:var(--ardoise);cursor:pointer}
+.galerie-thumb img{width:100%;height:100%;object-fit:cover;filter:grayscale(.3);transition:all .4s;display:block}
+.galerie-thumb:hover img{filter:grayscale(0);transform:scale(1.06)}
+
+/* ══ PAGES ═══════════════════════════════════════════════════════════ */
+.page{display:none}
+.page.active{display:block}
+
+/* ══ PAGE GALERIE COMPLÈTE ════════════════════════════════════════════ */
+.theme-tabs{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem}
+.theme-tab{background:none;border:1px solid var(--ardoise);color:rgba(245,240,232,.5);padding:.5rem 1rem;font-size:.72rem;cursor:pointer;display:flex;align-items:center;gap:.5rem;transition:all .2s;font-family:'DM Sans',sans-serif}
+.theme-tab.active{border-color:var(--or);color:var(--or);background:rgba(201,168,76,.07)}
+.theme-tab-count{padding:1px 6px;border-radius:8px;font-size:.62rem;font-weight:600;background:var(--ardoise);color:rgba(245,240,232,.5)}
+.theme-tab.active .theme-tab-count{background:var(--or);color:var(--noir)}
+.photo-grid-admin{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.6rem}
+.photo-admin-card{position:relative;aspect-ratio:1;background:var(--ardoise);overflow:hidden;group:true}
+.photo-admin-card img{width:100%;height:100%;object-fit:cover;display:block;transition:all .4s}
+.photo-admin-card:hover img{filter:brightness(.5)}
+.photo-admin-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:.5rem;opacity:0;transition:opacity .2s}
+.photo-admin-card:hover .photo-admin-overlay{opacity:1}
+.ph-btn{background:rgba(13,13,13,.85);border:1px solid rgba(245,240,232,.2);color:var(--ivoire);width:34px;height:34px;border-radius:2px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.ph-btn:hover{border-color:var(--or);color:var(--or)}
+.ph-btn.danger:hover{border-color:var(--danger);color:var(--danger)}
+.upload-zone{border:1px dashed var(--ardoise);padding:2.5rem;text-align:center;cursor:pointer;transition:all .3s;margin-bottom:1.5rem}
+.upload-zone:hover{border-color:var(--or);background:rgba(201,168,76,.03)}
+.upload-icon{font-size:2rem;margin-bottom:.5rem;opacity:.4}
+.upload-text{color:rgba(245,240,232,.4);font-size:.82rem}
+.upload-text strong{color:var(--or);font-weight:400}
+
+/* ══ PAGE PRESTATIONS ════════════════════════════════════════════════ */
+.presta-list{display:flex;flex-direction:column;gap:.65rem}
+.presta-card{background:var(--charbon);border:1px solid var(--ardoise);padding:1.1rem 1.35rem;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;transition:border-color .2s}
+.presta-card:hover{border-color:rgba(201,168,76,.25)}
+.presta-card.inactive{opacity:.45}
+.presta-card.popular{border-color:rgba(201,168,76,.5)}
+.presta-left{flex:1}
+.presta-header{display:flex;align-items:center;gap:.65rem;margin-bottom:.3rem;flex-wrap:wrap}
+.presta-name{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:300;color:var(--ivoire)}
+.presta-badge{background:var(--or);color:var(--noir);font-size:.58rem;padding:1px 7px;letter-spacing:.12em;text-transform:uppercase}
+.presta-status{width:7px;height:7px;border-radius:50%}
+.presta-prix{color:var(--or);font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:300;margin-bottom:.2rem}
+.presta-sous{color:rgba(245,240,232,.35);font-size:.72rem;margin-bottom:.65rem}
+.presta-details{list-style:none}
+.presta-details li{color:rgba(245,240,232,.5);font-size:.75rem;padding:.1rem 0}
+.presta-details li::before{content:'— ';color:var(--or)}
+.presta-actions{display:flex;flex-direction:column;gap:.4rem;flex-shrink:0}
+
+/* ══ PAGE MESSAGES ═══════════════════════════════════════════════════ */
+.msg-layout{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;height:calc(100vh - 220px)}
+.msg-list{background:var(--charbon);border:1px solid var(--ardoise);overflow-y:auto}
+.msg-row{padding:.9rem 1.1rem;border-bottom:1px solid rgba(44,44,44,.5);cursor:pointer;transition:all .2s;border-left:2px solid transparent}
+.msg-row:hover{background:rgba(255,255,255,.015)}
+.msg-row.active{background:rgba(201,168,76,.06);border-left-color:var(--or)}
+.msg-row.unread .msg-row-nom{font-weight:500;color:var(--ivoire)}
+.msg-row-nom{color:rgba(245,240,232,.75);font-size:.85rem;display:flex;align-items:center;gap:.4rem}
+.msg-row-presta{color:var(--or);font-size:.68rem;margin:.2rem 0}
+.msg-row-apercu{color:rgba(245,240,232,.4);font-size:.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:.4rem}
+.msg-row-footer{display:flex;justify-content:space-between;align-items:center}
+.msg-row-date{color:rgba(245,240,232,.25);font-size:.68rem}
+.msg-detail{background:var(--charbon);border:1px solid var(--ardoise);padding:1.5rem;overflow-y:auto}
+.msg-detail-nom{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:300;color:var(--ivoire);margin-bottom:.25rem}
+.msg-detail-email{color:var(--or);font-size:.82rem;text-decoration:none;display:block;margin-bottom:1rem}
+.msg-detail-tag{display:inline-block;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);color:var(--or);padding:.3rem .75rem;font-size:.72rem;margin-bottom:1.1rem}
+.msg-detail-text{color:rgba(245,240,232,.7);font-size:.88rem;line-height:1.85;white-space:pre-wrap;margin-bottom:1.5rem}
+.msg-detail-actions{display:flex;gap:.65rem;border-top:1px solid var(--ardoise);padding-top:1rem;flex-wrap:wrap}
+.btn-reply{background:var(--or);color:var(--noir);border:none;padding:.6rem 1.2rem;font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;text-decoration:none;display:inline-block}
+.btn-archive{background:none;border:1px solid var(--ardoise);color:rgba(245,240,232,.55);padding:.6rem 1rem;font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-delete-sm{background:none;border:1px solid rgba(239,68,68,.2);color:rgba(239,68,68,.6);padding:.6rem 1rem;font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif}
+
+/* ══ OVERLAY mobile ═══════════════════════════════════════════════════ */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:45}
+
+/* ══ NOTIFICATION TOAST ══════════════════════════════════════════════ */
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--charbon);border:1px solid var(--ardoise);padding:.85rem 1.25rem;font-size:.8rem;color:var(--ivoire);z-index:200;display:flex;align-items:center;gap:.65rem;animation:slideIn .3s ease;max-width:300px}
+.toast.success{border-color:rgba(74,222,128,.35);color:#86efac}
+.toast.error  {border-color:rgba(239,68,68,.35);color:#fca5a5}
+@keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .mobile-header{display:flex}
+  .overlay.show{display:block}
+  .msg-layout{grid-template-columns:1fr;height:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- ════ SIDEBAR ═════════════════════════════════════════════════════ -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="cg">CG<span>.</span></div>
+    <span class="admin-label">Administration</span>
+  </div>
+
+  <nav class="nav">
+    <button class="nav-item active" onclick="showPage('dashboard',this)">
+      <span class="nav-icon">◈</span> Dashboard
+    </button>
+    <button class="nav-item" onclick="showPage('galerie',this)">
+      <span class="nav-icon">◻</span> Galerie
+      <span class="nav-badge">48</span>
+    </button>
+    <button class="nav-item" onclick="showPage('prestations',this)">
+      <span class="nav-icon">◇</span> Prestations
+    </button>
+    <button class="nav-item" onclick="showPage('avis',this)">
+      <span class="nav-icon">★</span> Avis clients
+      <span class="nav-badge warning" style="background:rgba(251,191,36,.8)">3</span>
+    </button>
+    <button class="nav-item" onclick="showPage('messages',this)">
+      <span class="nav-icon">◉</span> Messages
+      <span class="nav-badge danger">5</span>
+    </button>
+  </nav>
+
+  <div class="sidebar-profile">
+    <div class="profile-avatar">C</div>
+    <div class="profile-info">
+      <div class="profile-name">Cédric Grimere</div>
+      <div class="profile-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="bfdcdadbcdd6dcffd8d2ded6d391dcd0d2">[email&#160;protected]</a></div>
+    </div>
+    <button class="logout-btn" onclick="logout()" title="Déconnexion">⏻</button>
+  </div>
+</aside>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- ════ MAIN ════════════════════════════════════════════════════════ -->
+<main class="main">
+
+  <!-- Header mobile -->
+  <div class="mobile-header">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <span style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:300">CG<span style="color:var(--or)">.</span></span>
+    <div style="width:28px"></div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══ PAGE DASHBOARD ══════════════════════════════════════════ -->
+    <div id="page-dashboard" class="page active">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Dashboard</h1>
+          <p class="page-sub">Vue d'ensemble · mise à jour en temps réel</p>
+        </div>
+        <button class="btn-gold" onclick="showToast('Données rechargées','success')">↻ Actualiser</button>
+      </div>
+
+      <p class="section-label">Messages & Avis</p>
+      <div class="stats-grid">
+        <div class="stat-card" onclick="showPage('messages',document.querySelector('[onclick*=messages]'))">
+          <div class="stat-val alert">5</div>
+          <div class="stat-lbl">Messages non lus</div>
+          <div class="stat-sub">12 ce mois-ci</div>
+        </div>
+        <div class="stat-card" onclick="showPage('messages',document.querySelector('[onclick*=messages]'))">
+          <div class="stat-val">18</div>
+          <div class="stat-lbl">Total messages</div>
+          <div class="stat-sub">3 archivés</div>
+        </div>
+        <div class="stat-card" onclick="showPage('avis',document.querySelector('[onclick*=avis]'))">
+          <div class="stat-val warning">3</div>
+          <div class="stat-lbl">Avis en attente</div>
+          <div class="stat-sub">À modérer</div>
+        </div>
+        <div class="stat-card" onclick="showPage('avis',document.querySelector('[onclick*=avis]'))">
+          <div class="stat-val">4.8 ★</div>
+          <div class="stat-lbl">Note moyenne</div>
+          <div class="stat-sub">12 avis publiés</div>
+        </div>
+      </div>
+
+      <p class="section-label">Galerie</p>
+      <div class="stats-grid">
+        <div class="stat-card" onclick="showPage('galerie',document.querySelector('[onclick*=galerie]'))">
+          <div class="stat-val">48</div>
+          <div class="stat-lbl">Total photos</div>
+          <div class="stat-sub">8 catégories</div>
+        </div>
+        <div class="stat-card"><div class="stat-val">8</div><div class="stat-lbl">Mariage</div></div>
+        <div class="stat-card"><div class="stat-val">5</div><div class="stat-lbl">Naissance</div></div>
+        <div class="stat-card"><div class="stat-val">6</div><div class="stat-lbl">Portrait</div></div>
+        <div class="stat-card"><div class="stat-val">5</div><div class="stat-lbl">Animalier</div></div>
+        <div class="stat-card"><div class="stat-val">5</div><div class="stat-lbl">Culinaire</div></div>
+        <div class="stat-card"><div class="stat-val">6</div><div class="stat-lbl">Événement</div></div>
+        <div class="stat-card"><div class="stat-val">7</div><div class="stat-lbl">Baptême</div></div>
+        <div class="stat-card"><div class="stat-val">6</div><div class="stat-lbl">Baby Shower</div></div>
+      </div>
+
+      <!-- Graphique -->
+      <div class="chart-box" style="margin-top:1rem">
+        <p class="chart-title">Répartition des photos par catégorie</p>
+        <div class="chart-wrap"><canvas id="chartPhotos"></canvas></div>
+      </div>
+
+      <p class="section-label">Prestations</p>
+      <div class="stats-grid">
+        <div class="stat-card" onclick="showPage('prestations',document.querySelector('[onclick*=prestations]'))">
+          <div class="stat-val">8</div><div class="stat-lbl">Forfaits actifs</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val">Mariage</div><div class="stat-lbl">Plus demandé</div><div class="stat-sub">6 demandes ce mois</div>
+        </div>
+      </div>
+
+      <!-- Dernière photo -->
+      <div class="last-photo-box" style="margin-top:1rem">
+        <img class="last-photo-img" src="https://images.unsplash.com/photo-1519741497674-611481863552?w=200&q=80" alt="Dernière photo"/>
+        <div>
+          <p class="last-photo-tag">Mariage</p>
+          <p class="last-photo-date">Dernière photo ajoutée · 14 mars 2025</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE GALERIE ════════════════════════════════════════════ -->
+    <div id="page-galerie" class="page">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Galerie</h1>
+          <p class="page-sub">Glissez-déposez pour réordonner · 48 photos au total</p>
+        </div>
+        <button class="btn-gold" onclick="document.getElementById('fileInput').click()">+ Ajouter des photos</button>
+        <input type="file" id="fileInput" multiple accept="image/*" style="display:none" onchange="handleUpload(this)"/>
+      </div>
+
+      <!-- Zone d'upload -->
+      <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+        <div class="upload-icon">📸</div>
+        <p class="upload-text">Cliquez ou glissez vos photos ici<br><strong>JPG, PNG, WebP, HEIC</strong> · Conversion WebP automatique · 20MB max</p>
+      </div>
+
+      <!-- Tabs thèmes -->
+      <div class="theme-tabs" id="themeTabs">
+        <button class="theme-tab active" onclick="switchTheme('mariage',this)">Mariage<span class="theme-tab-count">8</span></button>
+        <button class="theme-tab" onclick="switchTheme('naissance',this)">Naissance<span class="theme-tab-count">5</span></button>
+        <button class="theme-tab" onclick="switchTheme('portrait',this)">Portrait<span class="theme-tab-count">6</span></button>
+        <button class="theme-tab" onclick="switchTheme('animalier',this)">Animalier<span class="theme-tab-count">5</span></button>
+        <button class="theme-tab" onclick="switchTheme('culinaire',this)">Culinaire<span class="theme-tab-count">5</span></button>
+        <button class="theme-tab" onclick="switchTheme('evenement',this)">Événement<span class="theme-tab-count">6</span></button>
+        <button class="theme-tab" onclick="switchTheme('bapteme',this)">Baptême<span class="theme-tab-count">7</span></button>
+        <button class="theme-tab" onclick="switchTheme('babyshower',this)">Baby Shower<span class="theme-tab-count">6</span></button>
+      </div>
+      <p style="color:rgba(245,240,232,.25);font-size:.7rem;margin-bottom:1rem">⠿ Glissez les photos pour les réordonner · Survolez pour les actions</p>
+
+      <!-- Grille photos -->
+      <div class="photo-grid-admin" id="photoGrid"></div>
+    </div>
+
+    <!-- ══ PAGE PRESTATIONS ════════════════════════════════════════ -->
+    <div id="page-prestations" class="page">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Prestations</h1>
+          <p class="page-sub">8 forfaits · tous actifs</p>
+        </div>
+        <button class="btn-gold" onclick="showToast('Modal de création (à implémenter)','success')">+ Nouveau forfait</button>
+      </div>
+      <div class="presta-list" id="prestaList"></div>
+    </div>
+
+    <!-- ══ PAGE AVIS ═══════════════════════════════════════════════ -->
+    <div id="page-avis" class="page">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Avis clients</h1>
+          <p class="page-sub">3 en attente de modération · 12 publiés · Note moy. 4.8★</p>
+        </div>
+        <div style="display:flex;gap:.5rem">
+          <button class="btn-outline-sm" onclick="filterAvis('tous',this)" id="filterTous" style="border-color:var(--or);color:var(--or)">Tous</button>
+          <button class="btn-outline-sm" onclick="filterAvis('attente',this)">En attente</button>
+          <button class="btn-outline-sm" onclick="filterAvis('approuve',this)">Approuvés</button>
+        </div>
+      </div>
+      <div class="avis-mini-grid" id="avisList"></div>
+    </div>
+
+    <!-- ══ PAGE MESSAGES ═══════════════════════════════════════════ -->
+    <div id="page-messages" class="page">
+      <div class="page-header">
+        <div>
+          <h1 class="page-title">Messages</h1>
+          <p class="page-sub">5 non lus · 18 total</p>
+        </div>
+        <div style="display:flex;gap:.5rem">
+          <button class="btn-outline-sm" style="border-color:var(--or);color:var(--or)">Actifs</button>
+          <button class="btn-outline-sm">Archivés</button>
+        </div>
+      </div>
+      <div class="msg-layout">
+        <div class="msg-list" id="msgList"></div>
+        <div class="msg-detail" id="msgDetail">
+          <div style="height:100%;display:flex;align-items:center;justify-content:center;color:rgba(245,240,232,.2);font-size:.88rem">
+            Sélectionnez un message pour le lire
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ─── DATA MOCK ────────────────────────────────────────────────────────────
+const PHOTOS = {
+  mariage: [
+    'https://images.unsplash.com/photo-1519741497674-611481863552?w=400&q=70',
+    'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=400&q=70',
+    'https://images.unsplash.com/photo-1460978812857-470ed1c77af0?w=400&q=70',
+    'https://images.unsplash.com/photo-1529636798458-92182e662485?w=400&q=70',
+    'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=400&q=70',
+    'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=400&q=70',
+    'https://images.unsplash.com/photo-1519657015897-e0d489fe0fb0?w=400&q=70',
+    'https://images.unsplash.com/photo-1469371670807-013ccf25f16a?w=400&q=70',
+  ],
+  portrait:[
+    'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&q=70',
+    'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=400&q=70',
+    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&q=70',
+    'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=70',
+    'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=400&q=70',
+    'https://images.unsplash.com/photo-1567532939604-b6b5b0db2604?w=400&q=70',
+  ],
+}
+const ALL_THEMES=['mariage','naissance','portrait','animalier','culinaire','evenement','bapteme','babyshower']
+
+const PRESTATIONS=[
+  {titre:'Naissance · Grossesse · Shooting',prix:'100€',sous:'/ séance · 2h',details:['2h de présence','Prêt accessoires','10 photos HD'],actif:true,cat:'famille'},
+  {titre:'Animalier · Chien · Chat',prix:'150€',sous:'/ séance · 2h',details:['2h de présence','15 photos HD'],actif:true,cat:'special'},
+  {titre:'Culinaire',prix:'150€',sous:'/ séance',details:['10 photos HD'],actif:true,cat:'special'},
+  {titre:'Baby Shower · Anniversaire · EVG',prix:'250€',sous:'/ événement · 3h',details:['3h de présence','80 photos HD'],actif:true,cat:'evenement'},
+  {titre:'Événement · Sportif · Entreprise',prix:'200€',sous:'/ événement · 3h',details:['3h de présence','200 photos numériques','20 photos retouchées'],actif:true,cat:'evenement'},
+  {titre:'Baptême',prix:'400€',sous:'/ cérémonie · 4h',details:['4h de présence','100 photos HD'],actif:true,cat:'evenement'},
+  {titre:'Mariage',prix:'800€',sous:'/ jour · cérémonie→vin d\'honneur',details:['150 photos HD','Quelques clichés N&B'],actif:true,cat:'famille'},
+  {titre:'Mariage Complet',prix:'1 200€',sous:'/ jour · préparation→pièce montée',details:['200 photos HD','Photos numériques HD'],actif:true,cat:'famille',badge:'Le plus complet',populaire:true},
+]
+
+const AVIS=[
+  {nom:'Sophie & Marc',presta:'Mariage Complet',note:5,texte:'Léa a su capturer des moments sublimes. Des photos magnifiques que l\'on chérit.',statut:'attente'},
+  {nom:'Thomas R.',presta:'Portrait professionnel',note:5,texte:'Séance très naturelle et bienveillante. Résultat époustouflant !',statut:'attente'},
+  {nom:'Clara M.',presta:'Baptême',note:5,texte:'Des photos qui racontent notre histoire mieux que les mots.',statut:'attente'},
+  {nom:'Julie B.',presta:'Naissance',note:5,texte:'Magnifique séance grossesse, très pro et à l\'écoute.',statut:'approuve'},
+  {nom:'Marc D.',presta:'Événement entreprise',note:5,texte:'Travail de haute précision. Je recommande sans hésiter.',statut:'approuve'},
+]
+
+const MESSAGES=[
+  {nom:'Marie Dupont',email:'marie@gmail.com',presta:'Mariage Complet — 1 200€',msg:'Bonjour, je souhaite réserver pour juin 2026. Nous sommes disponibles le 14 ou le 21. Pourriez-vous nous indiquer vos disponibilités ?',date:'Aujourd\'hui',lu:false},
+  {nom:'Lucas Bernard',email:'lucas@hotmail.fr',presta:'Baptême — 400€',msg:'Nous organisons le baptême de notre fils le 8 mai. Êtes-vous disponible ? Nous serions ravis de vous rencontrer pour un RDV préparation.',date:'Hier',lu:false},
+  {nom:'Camille Petit',email:'camille@gmail.com',presta:'Animalier — 150€',msg:'Bonjour, j\'aimerais faire un shooting avec mon golden retriever Ulysse. C\'est pour lui faire un cadeau original.',date:'13 mars',lu:false},
+  {nom:'Antoine Leclerc',email:'antoine.lec@gmail.com',presta:'Mariage — 800€',msg:'Bonjour Cédric, nous sommes en train de préparer notre mariage pour septembre 2026. Votre travail est vraiment magnifique.',date:'12 mars',lu:false},
+  {nom:'Isabelle Roux',email:'isabelle.r@gmail.com',presta:'Naissance — 100€',msg:'Je suis enceinte de 7 mois et j\'aimerais faire un shooting grossesse. Quelles sont vos disponibilités en avril ?',date:'10 mars',lu:false},
+  {nom:'Pierre Martin',email:'pierre.m@gmail.com',presta:'Culinaire — 150€',msg:'Bonjour, je suis chef cuisinier et je cherche un photographe pour mettre en valeur mes plats.',date:'8 mars',lu:true},
+]
+
+// ─── NAVIGATION ───────────────────────────────────────────────────────────
+function showPage(pageId, btn) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'))
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'))
+  document.getElementById('page-'+pageId).classList.add('active')
+  if(btn) btn.classList.add('active')
+  closeSidebar()
+  if(pageId==='galerie') renderGalerie('mariage')
+  if(pageId==='prestations') renderPrestations()
+  if(pageId==='avis') renderAvis('tous')
+  if(pageId==='messages') renderMessages()
+}
+
+function toggleSidebar(){
+  document.getElementById('sidebar').classList.toggle('open')
+  document.getElementById('overlay').classList.toggle('show')
+}
+function closeSidebar(){
+  document.getElementById('sidebar').classList.remove('open')
+  document.getElementById('overlay').classList.remove('show')
+}
+function logout(){
+  if(confirm('Se déconnecter ?')) window.location.href='login.html'
+}
+
+// ─── CHART ────────────────────────────────────────────────────────────────
+const ctx = document.getElementById('chartPhotos').getContext('2d')
+new Chart(ctx,{
+  type:'bar',
+  data:{
+    labels:['Mariage','Naissance','Portrait','Animalier','Culinaire','Événement','Baptême','Baby Shower'],
+    datasets:[{
+      data:[8,5,6,5,5,6,7,6],
+      backgroundColor:'rgba(201,168,76,.55)',
+      borderColor:'#c9a84c',
+      borderWidth:1,
+      borderRadius:3,
+    }]
+  },
+  options:{
+    responsive:true,maintainAspectRatio:false,
+    plugins:{legend:{display:false}},
+    scales:{
+      x:{ticks:{color:'rgba(245,240,232,.4)',font:{size:10,family:'DM Sans'}},grid:{color:'rgba(44,44,44,.5)'}},
+      y:{ticks:{color:'rgba(245,240,232,.4)',font:{size:10,family:'DM Sans'}},grid:{color:'rgba(44,44,44,.5)'},beginAtZero:true},
+    }
+  }
+})
+
+// ─── GALERIE ──────────────────────────────────────────────────────────────
+function switchTheme(theme, btn) {
+  document.querySelectorAll('.theme-tab').forEach(t=>t.classList.remove('active'))
+  btn.classList.add('active')
+  renderGalerie(theme)
+}
+
+function renderGalerie(theme) {
+  const photos = PHOTOS[theme] || [
+    'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=400&q=70',
+    'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=400&q=70',
+    'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=400&q=70',
+    'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&q=70',
+    'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=400&q=70',
+  ]
+  const grid = document.getElementById('photoGrid')
+  grid.innerHTML = photos.map((src,i) => `
+    <div class="photo-admin-card">
+      <img src="${src}" alt="Photo ${i+1}" loading="lazy"/>
+      <div class="photo-admin-overlay">
+        <button class="ph-btn" onclick="showToast('Déplacer vers un autre thème','success')" title="Changer de thème">⇄</button>
+        <button class="ph-btn danger" onclick="deletePhoto(this)" title="Supprimer">✕</button>
+      </div>
+      <div style="position:absolute;top:6px;left:6px;background:rgba(0,0,0,.6);color:var(--or);font-size:.65rem;padding:2px 5px;cursor:grab;user-select:none">⠿</div>
+    </div>
+  `).join('')
+}
+
+function deletePhoto(btn) {
+  if(!confirm('Supprimer cette photo ?')) return
+  btn.closest('.photo-admin-card').style.animation='fadeOut .3s ease forwards'
+  setTimeout(()=>btn.closest('.photo-admin-card').remove(),300)
+  showToast('Photo supprimée','success')
+}
+
+function handleUpload(input) {
+  if(input.files.length){
+    showToast(`${input.files.length} photo(s) en cours d'upload... Conversion WebP auto`,'success')
+    setTimeout(()=>showToast('Upload terminé !','success'),2000)
+  }
+}
+
+// ─── PRESTATIONS ──────────────────────────────────────────────────────────
+function renderPrestations() {
+  const list = document.getElementById('prestaList')
+  list.innerHTML = PRESTATIONS.map((p,i) => `
+    <div class="presta-card ${p.populaire?'popular':''} ${p.actif?'':'inactive'}">
+      <div class="presta-left">
+        <div class="presta-header">
+          <span class="presta-name">${p.titre}</span>
+          ${p.badge?`<span class="presta-badge">${p.badge}</span>`:''}
+          <div class="presta-status" style="background:${p.actif?'#4ade80':'#6b7280'}"></div>
+        </div>
+        <div class="presta-prix">${p.prix}</div>
+        <div class="presta-sous">${p.sous}</div>
+        <ul class="presta-details">
+          ${p.details.map(d=>`<li>${d}</li>`).join('')}
+        </ul>
+      </div>
+      <div class="presta-actions">
+        <button class="btn-outline-sm" onclick="showToast('Modal d\\'édition (à implémenter)','success')">Modifier</button>
+        <button class="btn-outline-sm" style="${p.actif?'border-color:rgba(239,68,68,.4);color:rgba(239,68,68,.7)':'border-color:rgba(74,222,128,.4);color:rgba(74,222,128,.8)'}"
+          onclick="togglePresta(${i},this)">${p.actif?'Désactiver':'Activer'}</button>
+      </div>
+    </div>
+  `).join('')
+}
+
+function togglePresta(i, btn) {
+  PRESTATIONS[i].actif = !PRESTATIONS[i].actif
+  showToast(`Forfait ${PRESTATIONS[i].actif?'activé':'désactivé'}`,'success')
+  renderPrestations()
+}
+
+// ─── AVIS ─────────────────────────────────────────────────────────────────
+function filterAvis(type, btn) {
+  document.querySelectorAll('#page-avis .btn-outline-sm').forEach(b=>{b.style.borderColor='';b.style.color=''})
+  btn.style.borderColor='var(--or)'; btn.style.color='var(--or)'
+  renderAvis(type)
+}
+
+function renderAvis(filtre) {
+  const list = document.getElementById('avisList')
+  const filtered = AVIS.filter(a=>filtre==='tous'||a.statut===filtre)
+  list.innerHTML = filtered.map((a,i) => `
+    <div class="avis-mini">
+      <div class="avis-header">
+        <span class="avis-nom">${a.nom}</span>
+        <span class="avis-stars">${'★'.repeat(a.note)}</span>
+      </div>
+      <div class="avis-presta">${a.presta}</div>
+      <p class="avis-texte">"${a.texte}"</p>
+      <div style="margin-bottom:.75rem">
+        <span class="tag-pill ${a.statut}">${a.statut==='attente'?'En attente':'Approuvé'}</span>
+      </div>
+      <div class="avis-actions">
+        ${a.statut==='attente'?`
+          <button class="btn-approve" onclick="approveAvis(${AVIS.indexOf(a)},this)">✓ Approuver</button>
+          <button class="btn-refuse" onclick="refuseAvis(${AVIS.indexOf(a)},this)">✕ Refuser</button>
+        `:'<span style="color:rgba(245,240,232,.3);font-size:.72rem">Publié sur le site</span>'}
+      </div>
+    </div>
+  `).join('')
+}
+
+function approveAvis(i, btn) {
+  AVIS[i].statut='approuve'
+  showToast('Avis approuvé et publié','success')
+  renderAvis('tous')
+}
+function refuseAvis(i, btn) {
+  AVIS.splice(i,1)
+  showToast('Avis refusé et supprimé','success')
+  renderAvis('tous')
+}
+
+// ─── MESSAGES ─────────────────────────────────────────────────────────────
+function renderMessages() {
+  const list = document.getElementById('msgList')
+  list.innerHTML = MESSAGES.map((m,i) => `
+    <div class="msg-row ${m.lu?'':'unread'}" onclick="openMsg(${i},this)">
+      <div class="msg-row-nom">
+        ${!m.lu?'<span class="msg-unread-dot"></span>':''}
+        ${m.nom}
+      </div>
+      ${m.presta?`<div class="msg-row-presta">${m.presta}</div>`:''}
+      <div class="msg-row-apercu">${m.msg}</div>
+      <div class="msg-row-footer">
+        <span class="msg-row-date">${m.date}</span>
+        <span style="font-size:.65rem;color:rgba(245,240,232,.2)">${m.lu?'Lu':'●'}</span>
+      </div>
+    </div>
+  `).join('')
+}
+
+function openMsg(i, row) {
+  const m = MESSAGES[i]
+  m.lu = true
+  document.querySelectorAll('.msg-row').forEach(r=>r.classList.remove('active'))
+  row.classList.add('active')
+  row.classList.remove('unread')
+  row.querySelector('.msg-row-nom').innerHTML = m.nom
+
+  document.getElementById('msgDetail').innerHTML = `
+    <div>
+      <div style="margin-bottom:1rem">
+        <div class="msg-detail-nom">${m.nom}</div>
+        <a href="mailto:${m.email}" class="msg-detail-email">${m.email}</a>
+      </div>
+      ${m.presta?`<div class="msg-detail-tag">📋 ${m.presta}</div>`:''}
+      <p class="msg-detail-text">${m.msg}</p>
+      <div class="msg-detail-actions">
+        <a class="btn-reply" href="mailto:${m.email}?subject=Re: Votre demande - Cédric Grimere Photographe">✉️ Répondre</a>
+        <button class="btn-archive" onclick="archiveMsg(${i})">Archiver</button>
+        <button class="btn-delete-sm" onclick="deleteMsg(${i})">Supprimer</button>
+      </div>
+    </div>
+  `
+}
+
+function archiveMsg(i){
+  MESSAGES.splice(i,1)
+  document.getElementById('msgDetail').innerHTML='<div style="height:100%;display:flex;align-items:center;justify-content:center;color:rgba(245,240,232,.2);font-size:.88rem">Sélectionnez un message</div>'
+  renderMessages()
+  showToast('Message archivé','success')
+}
+function deleteMsg(i){
+  if(!confirm('Supprimer définitivement ?')) return
+  MESSAGES.splice(i,1)
+  document.getElementById('msgDetail').innerHTML='<div style="height:100%;display:flex;align-items:center;justify-content:center;color:rgba(245,240,232,.2);font-size:.88rem">Sélectionnez un message</div>'
+  renderMessages()
+  showToast('Message supprimé','success')
+}
+
+// ─── TOAST ────────────────────────────────────────────────────────────────
+function showToast(text, type='success') {
+  const t = document.createElement('div')
+  t.className = `toast ${type}`
+  t.innerHTML = `<span>${type==='success'?'✓':'✕'}</span> ${text}`
+  document.body.appendChild(t)
+  setTimeout(()=>{t.style.animation='fadeOut .3s ease forwards';setTimeout(()=>t.remove(),300)},2500)
+}
+
+// ─── INIT ───────────────────────────────────────────�

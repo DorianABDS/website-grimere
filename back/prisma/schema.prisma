@@ -1,0 +1,96 @@
+// ─── Schéma Prisma — PostgreSQL ───────────────────────────────────────────
+// Commandes utiles :
+//   npm run db:push    → crée/met à jour les tables sans migration
+//   npm run db:studio  → interface visuelle pour voir les données
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Photos ───────────────────────────────────────────────────────────────
+model Photo {
+  id        String   @id @default(cuid())
+  url       String                        // URL Cloudinary
+  publicId  String                        // ID Cloudinary (pour suppression)
+  alt       String   @default("")
+  theme     Theme
+  ordre     Int      @default(0)
+  largeur   Int?
+  hauteur   Int?
+  taille    Int?                          // Taille en bytes
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([theme, ordre])
+}
+
+// ─── Prestations ──────────────────────────────────────────────────────────
+model Prestation {
+  id        String    @id @default(cuid())
+  slug      String    @unique
+  categorie Categorie
+  titre     String
+  prix      String
+  sousTitre String?
+  details   String[]
+  badge     String?
+  populaire Boolean   @default(false)
+  actif     Boolean   @default(true)
+  ordre     Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+// ─── Avis ─────────────────────────────────────────────────────────────────
+model Avis {
+  id          String     @id @default(cuid())
+  nom         String
+  prestation  String
+  note        Int
+  commentaire String
+  statut      StatutAvis @default(EN_ATTENTE)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+// ─── Messages ─────────────────────────────────────────────────────────────
+model Message {
+  id         String   @id @default(cuid())
+  nom        String
+  email      String
+  prestation String   @default("")
+  message    String
+  lu         Boolean  @default(false)
+  archive    Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+// ─── Enums ────────────────────────────────────────────────────────────────
+enum Theme {
+  mariage
+  naissance
+  portrait
+  animalier
+  culinaire
+  evenement
+  bapteme
+  babyshower
+}
+
+enum Categorie {
+  famille
+  evenement
+  special
+}
+
+enum StatutAvis {
+  EN_ATTENTE
+  APPROUVE
+  REFUSE
+}
