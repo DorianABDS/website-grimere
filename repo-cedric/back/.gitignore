@@ -1,6 +1,0 @@
-node_modules/
-.env
-uploads/temp/*
-!uploads/temp/.gitkeep
-*.log
-.DS_Store
