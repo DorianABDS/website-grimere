@@ -10,10 +10,10 @@ router.get('/google',
 // ── Callback après authentification ──────────────────────────────────────
 router.get('/google/callback',
   passport.authenticate('google', {
-    failureRedirect: `${process.env.FRONTEND_URL}/admin?error=acces_refuse`,
+    failureRedirect: `${process.env.FRONTEND_URL}/admin/login.html?error=acces_refuse`,
   }),
   (req, res) => {
-    res.redirect(`${process.env.FRONTEND_URL}/admin/dashboard`)
+    res.redirect(`${process.env.FRONTEND_URL}/admin/dashboard.html`)
   }
 )
 
