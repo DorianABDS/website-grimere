@@ -1,16 +1,6 @@
 #!/bin/sh
 set -e
 
-echo "⏳ Attente de PostgreSQL..."
-
-# Attendre que PostgreSQL accepte les connexions
-until pg_isready -h postgres -U cedric -d cedric_grimere > /dev/null 2>&1; do
-  echo "   PostgreSQL pas encore prêt, retry dans 2s..."
-  sleep 2
-done
-
-echo "✅ PostgreSQL prêt !"
-
 # Appliquer le schéma Prisma
 echo "📦 Application du schéma..."
 npx prisma db push --skip-generate
