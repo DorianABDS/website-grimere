@@ -10,6 +10,9 @@ Thumbs.db
 .vscode/
 .idea/
 .env.docker
-.env.docker
+
+# Configs locaux avec données réelles (utiliser *.example.js comme base)
+front/config.js
+admin/config.js
 
 GUIDE-DEMARRAGE.md

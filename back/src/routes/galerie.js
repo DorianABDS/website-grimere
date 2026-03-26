@@ -52,7 +52,7 @@ router.post('/upload', isAdmin, upload.array('photos', 20), async (req, res) => 
 
       // 2. Upload Cloudinary
       const result = await cloudinary.uploader.upload(outputPath, {
-        folder: `cedric-grimere/${theme}`,
+        folder: `${process.env.CLOUDINARY_FOLDER}/${theme}`,
         format: 'webp',
       })
 

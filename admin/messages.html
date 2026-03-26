@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin — Messages</title>
+<meta name="robots" content="noindex, nofollow"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="config.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --noir:#0d0d0d;--charbon:#1a1a1a;--ardoise:#2c2c2c;
+  --cendre:#6b6b6b;--ivoire:#f5f0e8;--or:#c9a84c;--or-pale:#e8d5a3;
+  --success:rgba(74,222,128,.8);--warning:rgba(251,191,36,.8);--danger:rgba(239,68,68,.8);
+  --sidebar:240px;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--noir);font-family:'DM Sans',sans-serif;font-weight:300;color:var(--ivoire);display:flex}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:var(--noir)}
+::-webkit-scrollbar-thumb{background:var(--ardoise);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--or)}
+.sidebar{width:var(--sidebar);min-height:100vh;background:var(--charbon);border-right:1px solid var(--ardoise);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;transition:transform .3s;flex-shrink:0}
+.sidebar-logo{padding:1.75rem 1.5rem 1.5rem;border-bottom:1px solid var(--ardoise)}
+.sidebar-logo .cg{font-family:'Cormorant Garamond',serif;font-size:1.75rem;font-weight:300;letter-spacing:.12em;color:var(--ivoire)}
+.sidebar-logo .cg span{color:var(--or)}
+.sidebar-logo .admin-label{color:rgba(245,240,232,.3);font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;display:block;margin-top:.3rem}
+.nav{flex:1;padding:.75rem 0;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:.75rem;padding:.7rem 1.5rem;background:none;border:none;color:rgba(245,240,232,.45);font-size:.82rem;cursor:pointer;transition:all .2s;text-align:left;width:100%;border-left:2px solid transparent;font-family:'DM Sans',sans-serif;letter-spacing:.02em;position:relative;text-decoration:none}
+.nav-item:hover{color:rgba(245,240,232,.8);background:rgba(255,255,255,.02)}
+.nav-item.active{color:var(--or);background:rgba(201,168,76,.07);border-left-color:var(--or)}
+.nav-icon{font-size:.95rem;width:20px;text-align:center;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--or);color:var(--noir);font-size:.6rem;font-weight:600;padding:1px 6px;border-radius:10px;min-width:18px;text-align:center}
+.nav-badge.danger{background:var(--danger);color:#fff}
+.sidebar-profile{padding:1rem 1.25rem;border-top:1px solid var(--ardoise);display:flex;align-items:center;gap:.75rem}
+.profile-avatar{width:34px;height:34px;border-radius:50%;border:1px solid var(--ardoise);flex-shrink:0;background:var(--ardoise);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;color:var(--or);font-size:1rem}
+.profile-info{flex:1;overflow:hidden}
+.profile-name{color:var(--ivoire);font-size:.8rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.profile-email{color:rgba(245,240,232,.3);font-size:.65rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.logout-btn{background:none;border:none;color:rgba(245,240,232,.25);cursor:pointer;font-size:1rem;padding:.25rem;transition:color .2s;flex-shrink:0}
+.logout-btn:hover{color:var(--danger)}
+.main{margin-left:var(--sidebar);flex:1;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+.mobile-header{display:none;align-items:center;justify-content:space-between;padding:.85rem 1.25rem;border-bottom:1px solid var(--ardoise);background:var(--charbon);position:sticky;top:0;z-index:40}
+.menu-btn{background:none;border:none;color:var(--ivoire);font-size:1.2rem;cursor:pointer;line-height:1}
+.content{padding:2rem;flex:1;overflow:hidden;display:flex;flex-direction:column}
+.page-header{margin-bottom:1.25rem;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem;flex-shrink:0}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--ivoire);line-height:1}
+.page-sub{color:rgba(245,240,232,.35);font-size:.8rem;margin-top:.35rem}
+.btn-gold{background:var(--or);color:var(--noir);border:none;padding:.65rem 1.4rem;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .2s}
+.btn-gold:hover{background:var(--or-pale)}
+.btn-outline-sm{background:none;border:1px solid var(--ardoise);color:rgba(245,240,232,.6);padding:.5rem 1rem;font-size:.72rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-outline-sm:hover{border-color:var(--or);color:var(--or)}
+.filter-bar{display:flex;gap:.5rem;flex-shrink:0;margin-bottom:1rem}
+.filter-btn{background:none;border:1px solid var(--ardoise);color:rgba(245,240,232,.5);padding:.45rem 1rem;font-size:.72rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;letter-spacing:.04em}
+.filter-btn.active{border-color:var(--or);color:var(--or);background:rgba(201,168,76,.06)}
+.filter-btn:hover:not(.active){border-color:rgba(201,168,76,.3);color:rgba(245,240,232,.8)}
+.msg-layout{display:grid;grid-template-columns:1fr 1fr;gap:.85rem;flex:1;min-height:0}
+.msg-list{background:var(--charbon);border:1px solid var(--ardoise);overflow-y:auto}
+.msg-row{padding:.9rem 1.1rem;border-bottom:1px solid rgba(44,44,44,.5);cursor:pointer;transition:all .2s;border-left:2px solid transparent}
+.msg-row:hover{background:rgba(255,255,255,.015)}
+.msg-row.active{background:rgba(201,168,76,.06);border-left-color:var(--or)}
+.msg-row-nom{color:rgba(245,240,232,.75);font-size:.85rem;display:flex;align-items:center;gap:.4rem;margin-bottom:.15rem}
+.msg-row-nom.unread{color:var(--ivoire);font-weight:500}
+.unread-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--or);flex-shrink:0}
+.msg-row-presta{color:var(--or);font-size:.68rem;margin:.15rem 0}
+.msg-row-apercu{color:rgba(245,240,232,.4);font-size:.75rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:.35rem}
+.msg-row-footer{display:flex;justify-content:space-between;align-items:center}
+.msg-row-date{color:rgba(245,240,232,.25);font-size:.68rem}
+.msg-empty{display:flex;align-items:center;justify-content:center;padding:3rem;color:rgba(245,240,232,.2);font-size:.85rem}
+.msg-detail{background:var(--charbon);border:1px solid var(--ardoise);padding:1.5rem;overflow-y:auto;display:flex;flex-direction:column}
+.msg-detail-empty{flex:1;display:flex;align-items:center;justify-content:center;color:rgba(245,240,232,.2);font-size:.85rem}
+.msg-detail-nom{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:300;color:var(--ivoire);margin-bottom:.25rem}
+.msg-detail-email{color:var(--or);font-size:.82rem;text-decoration:none;display:block;margin-bottom:1rem}
+.msg-detail-email:hover{text-decoration:underline}
+.msg-detail-tag{display:inline-block;background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.2);color:var(--or);padding:.3rem .75rem;font-size:.72rem;margin-bottom:1.1rem}
+.msg-detail-text{color:rgba(245,240,232,.7);font-size:.88rem;line-height:1.85;white-space:pre-wrap;margin-bottom:1.5rem;flex:1}
+.msg-detail-actions{display:flex;gap:.65rem;border-top:1px solid var(--ardoise);padding-top:1rem;flex-wrap:wrap;flex-shrink:0}
+.btn-reply{background:var(--or);color:var(--noir);border:none;padding:.6rem 1.2rem;font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;text-decoration:none;display:inline-flex;align-items:center;gap:.4rem}
+.btn-reply:hover{background:var(--or-pale)}
+.btn-archive{background:none;border:1px solid var(--ardoise);color:rgba(245,240,232,.55);padding:.6rem 1rem;font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-archive:hover{border-color:var(--or);color:var(--or)}
+.btn-delete-sm{background:none;border:1px solid rgba(239,68,68,.2);color:rgba(239,68,68,.6);padding:.6rem 1rem;font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-delete-sm:hover{border-color:rgba(239,68,68,.5);color:#fca5a5}
+.btn-toggle-lu{background:none;border:1px solid var(--ardoise);color:rgba(245,240,232,.55);padding:.6rem 1rem;font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;margin-left:auto}
+.btn-toggle-lu:hover{border-color:rgba(201,168,76,.4);color:var(--or)}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:45}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--charbon);border:1px solid var(--ardoise);padding:.85rem 1.25rem;font-size:.8rem;color:var(--ivoire);z-index:200;display:flex;align-items:center;gap:.65rem;animation:slideIn .3s ease;max-width:300px}
+.toast.success{border-color:rgba(74,222,128,.35);color:#86efac}
+.toast.error{border-color:rgba(239,68,68,.35);color:#fca5a5}
+@keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeOut{from{opacity:1}to{opacity:0}}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .mobile-header{display:flex}
+  .overlay.show{display:block}
+  .msg-layout{grid-template-columns:1fr;height:auto}
+  .content{overflow:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="cg">CG<span>.</span></div>
+    <span class="admin-label">Administration</span>
+  </div>
+
+  <nav class="nav">
+    <a class="nav-item" href="dashboard.html">
+      <span class="nav-icon">◈</span> Dashboard
+    </a>
+    <a class="nav-item" href="galerie.html">
+      <span class="nav-icon">◻</span> Galerie
+    </a>
+    <a class="nav-item" href="prestations.html">
+      <span class="nav-icon">◇</span> Prestations
+    </a>
+    <a class="nav-item" href="avis.html">
+      <span class="nav-icon">★</span> Avis clients
+      <span class="nav-badge" id="badge-avis" style="display:none"></span>
+    </a>
+    <a class="nav-item active" href="messages.html">
+      <span class="nav-icon">◉</span> Messages
+      <span class="nav-badge danger" id="badge-messages" style="display:none"></span>
+    </a>
+    <a class="nav-item" href="stats.html">
+      <span class="nav-icon">◎</span> Statistiques
+    </a>
+  </nav>
+
+  <div class="sidebar-profile">
+    <div class="profile-avatar" id="profile-avatar">C</div>
+    <div class="profile-info">
+      <div class="profile-name" id="profile-name"></div>
+      <div class="profile-email" id="profile-email"></div>
+    </div>
+    <button class="logout-btn" onclick="logout()" title="Déconnexion">⏻</button>
+  </div>
+</aside>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<!-- MAIN -->
+<main class="main">
+
+  <div class="mobile-header">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <span style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:300">CG<span style="color:var(--or)">.</span></span>
+    <div style="width:28px"></div>
+  </div>
+
+  <div class="content">
+
+    <div class="page-header">
+      <div>
+        <h1 class="page-title">Messages</h1>
+        <p class="page-sub" id="page-sub">Chargement…</p>
+      </div>
+      <div class="filter-bar">
+        <button class="filter-btn active" id="btn-actifs" onclick="switchView('actifs')">Actifs</button>
+        <button class="filter-btn" id="btn-archives" onclick="switchView('archives')">Archivés</button>
+      </div>
+    </div>
+
+    <div class="msg-layout">
+      <!-- Liste -->
+      <div class="msg-list" id="msg-list">
+        <div class="msg-empty">Chargement…</div>
+      </div>
+
+      <!-- Détail -->
+      <div class="msg-detail" id="msg-detail">
+        <div class="msg-detail-empty">Sélectionnez un message pour le lire</div>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<script>
+const API = (window.ADMIN_CONFIG && window.ADMIN_CONFIG.API_URL) || 'http://localhost:5000'
+
+async function checkSession() {
+  try {
+    const res = await fetch(API + '/api/auth/me', { credentials: 'include' })
+    const data = await res.json()
+    if (!data.connecte) { window.location.href = 'login.html'; return null }
+    const pn = document.getElementById('profile-name'); if(pn) pn.textContent = data.user.displayName || ''
+    const pe = document.getElementById('profile-email'); if(pe) pe.textContent = data.user.email || ''
+    const pa = document.getElementById('profile-avatar'); if(pa && data.user.displayName) pa.textContent = data.user.displayName[0]
+    return data.user
+  } catch(e) { window.location.href = 'login.html'; return null }
+}
+
+async function logout() {
+  if (!confirm('Se déconnecter ?')) return
+  try { await fetch(API + '/api/auth/logout', { method: 'POST', credentials: 'include' }) } catch(e) {}
+  window.location.href = 'login.html'
+}
+
+async function loadBadges() {
+  try {
+    const res = await fetch(API + '/api/stats', { credentials: 'include' })
+    if (!res.ok) return
+    const s = await res.json()
+    const bMsg = document.getElementById('badge-messages')
+    if(bMsg) { if(s.messages.nonLus > 0){ bMsg.textContent = s.messages.nonLus; bMsg.style.display = '' } else bMsg.style.display = 'none' }
+    const bAvis = document.getElementById('badge-avis')
+    if(bAvis) { if(s.avis.enAttente > 0){ bAvis.textContent = s.avis.enAttente; bAvis.style.display = '' } else bAvis.style.display = 'none' }
+  } catch(e) {}
+}
+
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('show') }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show') }
+
+function showToast(text, type='success') {
+  const t = document.createElement('div'); t.className = `toast ${type}`
+  t.innerHTML = `<span>${type==='success'?'✓':'✕'}</span> ${text}`
+  document.body.appendChild(t)
+  setTimeout(() => { t.style.animation = 'fadeOut .3s ease forwards'; setTimeout(() => t.remove(), 300) }, 2500)
+}
+
+// ─── State ────────────────────────────────────────────────────────────────
+let messages = []
+let currentView = 'actifs'
+let selectedId = null
+
+// ─── Helpers ─────────────────────────────────────────────────────────────
+function formatDate(iso) {
+  if (!iso) return ''
+  const d = new Date(iso)
+  const now = new Date()
+  const diff = now - d
+  if (diff < 60000) return 'À l\'instant'
+  if (diff < 3600000) return `Il y a ${Math.floor(diff/60000)} min`
+  if (diff < 86400000) return `Il y a ${Math.floor(diff/3600000)} h`
+  if (diff < 604800000) return `Il y a ${Math.floor(diff/86400000)} j`
+  return d.toLocaleDateString('fr-FR', { day:'2-digit', month:'short' })
+}
+
+function updatePageSub() {
+  const nonLus = messages.filter(m => !m.lu).length
+  const sub = document.getElementById('page-sub')
+  if (currentView === 'actifs') {
+    sub.textContent = nonLus > 0
+      ? `${nonLus} message${nonLus > 1 ? 's' : ''} non lu${nonLus > 1 ? 's' : ''}`
+      : 'Tous les messages lus'
+  } else {
+    sub.textContent = `${messages.length} message${messages.length !== 1 ? 's' : ''} archivé${messages.length !== 1 ? 's' : ''}`
+  }
+}
+
+// ─── Render liste ────────────────────────────────────────────────────────
+function renderList() {
+  const container = document.getElementById('msg-list')
+  if (messages.length === 0) {
+    container.innerHTML = `<div class="msg-empty">${currentView === 'actifs' ? 'Aucun message actif' : 'Aucun message archivé'}</div>`
+    return
+  }
+  container.innerHTML = messages.map(m => `
+    <div class="msg-row${m.id === selectedId ? ' active' : ''}" id="row-${m.id}" onclick="selectMessage('${m.id}')">
+      <div class="msg-row-nom${!m.lu ? ' unread' : ''}">
+        ${!m.lu ? '<span class="unread-dot" id="dot-'+m.id+'"></span>' : '<span id="dot-'+m.id+'" style="display:none" class="unread-dot"></span>'}
+        ${escHtml(m.nom)}
+      </div>
+      <div class="msg-row-presta">${escHtml(m.prestation || '')}</div>
+      <div class="msg-row-apercu">${escHtml(m.message || '')}</div>
+      <div class="msg-row-footer">
+        <span class="msg-row-date">${formatDate(m.createdAt)}</span>
+      </div>
+    </div>
+  `).join('')
+}
+
+// ─── Render détail ───────────────────────────────────────────────────────
+function renderDetail(msg) {
+  if (!msg) {
+    document.getElementById('msg-detail').innerHTML = '<div class="msg-detail-empty">Sélectionnez un message pour le lire</div>'
+    return
+  }
+  const subject = encodeURIComponent('Re: ' + (msg.prestation || 'Votre demande'))
+  const isArchived = currentView === 'archives'
+  document.getElementById('msg-detail').innerHTML = `
+    <div>
+      <div class="msg-detail-nom">${escHtml(msg.nom)}</div>
+      <a class="msg-detail-email" href="mailto:${escHtml(msg.email)}">${escHtml(msg.email)}</a>
+      <div class="msg-detail-tag">${escHtml(msg.prestation || 'Sans prestation')}</div>
+    </div>
+    <div class="msg-detail-text">${escHtml(msg.message || '')}</div>
+    <div class="msg-detail-actions">
+      <a class="btn-reply" href="mailto:${escHtml(msg.email)}?subject=${subject}">✉ Répondre</a>
+      ${!isArchived ? `<button class="btn-archive" onclick="archiveMsg('${msg.id}')">Archiver</button>` : ''}
+      <button class="btn-delete-sm" onclick="deleteMsg('${msg.id}')">Supprimer</button>
+      <button class="btn-toggle-lu" id="btn-lu-${msg.id}" onclick="toggleLu('${msg.id}')">
+        ${msg.lu ? 'Marquer non lu' : 'Marquer lu'}
+      </button>
+    </div>
+  `
+}
+
+function escHtml(str) {
+  if (str == null) return ''
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+}
+
+// ─── Sélection ───────────────────────────────────────────────────────────
+async function selectMessage(id) {
+  const msg = messages.find(m => m.id == id)
+  if (!msg) return
+
+  // Retirer l'active de l'ancienne ligne
+  if (selectedId) {
+    const oldRow = document.getElementById('row-' + selectedId)
+    if (oldRow) oldRow.classList.remove('active')
+  }
+
+  selectedId = id
+  const row = document.getElementById('row-' + id)
+  if (row) row.classList.add('active')
+
+  renderDetail(msg)
+
+  // Marquer comme lu si non lu
+  if (!msg.lu) {
+    try {
+      await fetch(API + '/api/messages/' + id + '/lu', { method: 'PATCH', credentials: 'include' })
+      msg.lu = true
+      // Mettre à jour visuellement le dot et le nom
+      const dot = document.getElementById('dot-' + id)
+      if (dot) dot.style.display = 'none'
+      const nomEl = row ? row.querySelector('.msg-row-nom') : null
+      if (nomEl) { nomEl.classList.remove('unread') }
+      // Mettre à jour le bouton dans le détail
+      const btnLu = document.getElementById('btn-lu-' + id)
+      if (btnLu) btnLu.textContent = 'Marquer non lu'
+      updatePageSub()
+      loadBadges()
+    } catch(e) {}
+  }
+}
+
+// ─── Toggle lu ───────────────────────────────────────────────────────────
+async function toggleLu(id) {
+  const msg = messages.find(m => m.id == id)
+  if (!msg) return
+  try {
+    await fetch(API + '/api/messages/' + id + '/lu', { method: 'PATCH', credentials: 'include' })
+    msg.lu = !msg.lu
+    const dot = document.getElementById('dot-' + id)
+    const row = document.getElementById('row-' + id)
+    const nomEl = row ? row.querySelector('.msg-row-nom') : null
+    if (msg.lu) {
+      if (dot) dot.style.display = 'none'
+      if (nomEl) nomEl.classList.remove('unread')
+    } else {
+      if (dot) dot.style.display = ''
+      if (nomEl) nomEl.classList.add('unread')
+    }
+    const btnLu = document.getElementById('btn-lu-' + id)
+    if (btnLu) btnLu.textContent = msg.lu ? 'Marquer non lu' : 'Marquer lu'
+    updatePageSub()
+    loadBadges()
+    showToast(msg.lu ? 'Marqué comme lu' : 'Marqué comme non lu')
+  } catch(e) { showToast('Erreur lors de la mise à jour', 'error') }
+}
+
+// ─── Archiver ─────────────────────────────────────────────────────────────
+async function archiveMsg(id) {
+  try {
+    const res = await fetch(API + '/api/messages/' + id + '/archive', { method: 'PATCH', credentials: 'include' })
+    if (!res.ok) throw new Error()
+    messages = messages.filter(m => m.id != id)
+    selectedId = null
+    renderList()
+    renderDetail(null)
+    updatePageSub()
+    loadBadges()
+    showToast('Message archivé')
+  } catch(e) { showToast('Erreur lors de l\'archivage', 'error') }
+}
+
+// ─── Supprimer ────────────────────────────────────────────────────────────
+async function deleteMsg(id) {
+  if (!confirm('Supprimer définitivement ce message ?')) return
+  try {
+    const res = await fetch(API + '/api/messages/' + id, { method: 'DELETE', credentials: 'include' })
+    if (!res.ok) throw new Error()
+    messages = messages.filter(m => m.id != id)
+    selectedId = null
+    renderList()
+    renderDetail(null)
+    updatePageSub()
+    loadBadges()
+    showToast('Message supprimé')
+  } catch(e) { showToast('Erreur lors de la suppression', 'error') }
+}
+
+// ─── Chargement ───────────────────────────────────────────────────────────
+async function loadMessages(view) {
+  const url = view === 'archives'
+    ? API + '/api/messages/archives'
+    : API + '/api/messages'
+  try {
+    const res = await fetch(url, { credentials: 'include' })
+    if (!res.ok) throw new Error()
+    messages = await res.json()
+    selectedId = null
+    renderList()
+    renderDetail(null)
+    updatePageSub()
+  } catch(e) {
+    document.getElementById('msg-list').innerHTML = '<div class="msg-empty">Erreur de chargement</div>'
+    document.getElementById('page-sub').textContent = 'Erreur de connexion'
+  }
+}
+
+// ─── Switch vue ────────────────────────────────────────────────────────────
+function switchView(view) {
+  currentView = view
+  document.getElementById('btn-actifs').classList.toggle('active', view === 'actifs')
+  document.getElementById('btn-archives').classList.toggle('active', view === 'archives')
+  loadMessages(view)
+}
+
+// ─── Init ─────────────────────────────────────────────────────────────────
+;(async () => {
+  const user = await checkSession()
+  if (!user) return
+  await loadBadges()
+  await loadMessages('actifs')
+})()
+</script>
+</body>
+</html>

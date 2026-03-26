@@ -27,7 +27,7 @@ const layout = (body) => `
             CG<span style="color:#c9a84c">.</span>
           </p>
           <p style="color:rgba(245,240,232,.35);font-size:.65rem;letter-spacing:.28em;text-transform:uppercase;margin:.4rem 0 0">
-            Cédric Grimere · Photographe
+            ${process.env.PHOTOGRAPHE_NOM} · Photographe
           </p>
         </td></tr>
 
@@ -39,10 +39,10 @@ const layout = (body) => `
         <!-- Footer -->
         <tr><td style="padding:1.25rem;text-align:center">
           <p style="color:#999;font-size:.72rem;margin:0">
-            📍 Marseille &amp; Bouches-du-Rhône &nbsp;·&nbsp;
-            <a href="mailto:cedricgrimere@hotmail.com" style="color:#c9a84c;text-decoration:none">cedricgrimere@hotmail.com</a>
+            📍 ${process.env.PHOTOGRAPHE_VILLE} &nbsp;·&nbsp;
+            <a href="mailto:${process.env.MAIL_USER}" style="color:#c9a84c;text-decoration:none">${process.env.MAIL_USER}</a>
             &nbsp;·&nbsp;
-            <a href="https://instagram.com/cedric_grimere" style="color:#c9a84c;text-decoration:none">@cedric_grimere</a>
+            <a href="${process.env.PHOTOGRAPHE_INSTAGRAM}" style="color:#c9a84c;text-decoration:none">@${(process.env.PHOTOGRAPHE_INSTAGRAM||'').replace('https://instagram.com/','')}</a>
           </p>
         </td></tr>
 
@@ -83,7 +83,7 @@ const sendAdminNotification = async ({ nom, email, prestation, message }) => {
         </tr>
       </table>
       <div style="margin-top:1.5rem">
-        <a href="mailto:${email}?subject=Re: Votre demande - Cédric Grimere Photographe"
+        <a href="mailto:${email}?subject=Re: Votre demande - ${process.env.PHOTOGRAPHE_NOM} Photographe"
           style="display:inline-block;background:#c9a84c;color:#000;padding:.65rem 1.5rem;
           text-decoration:none;font-size:.8rem;font-weight:500;letter-spacing:.05em">
           Répondre à ${nom}
@@ -98,7 +98,7 @@ const sendClientConfirmation = async ({ nom, email, prestation }) => {
   await transporter.sendMail({
     from:    process.env.MAIL_FROM,
     to:      email,
-    subject: `Votre demande a bien été reçue — Cédric Grimere Photographe`,
+    subject: `Votre demande a bien été reçue — ${process.env.PHOTOGRAPHE_NOM} Photographe`,
     html: layout(`
       <h2 style="color:#c9a84c;font-family:Georgia,serif;font-weight:300;font-size:1.5rem;margin:0 0 1rem">
         Bonjour ${nom},
@@ -113,8 +113,8 @@ const sendClientConfirmation = async ({ nom, email, prestation }) => {
       </p>
       <p style="color:#777;font-size:.85rem;border-top:1px solid #f0ece4;padding-top:1rem;margin:0">
         À très bientôt,<br>
-        <strong style="color:#333">Cédric Grimere</strong><br>
-        <span style="color:#c9a84c">Photographe · Marseille</span>
+        <strong style="color:#333">${process.env.PHOTOGRAPHE_NOM}</strong><br>
+        <span style="color:#c9a84c">Photographe · ${process.env.PHOTOGRAPHE_VILLE}</span>
       </p>
     `),
   })

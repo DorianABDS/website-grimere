@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Admin — Galerie</title>
+<meta name="robots" content="noindex, nofollow"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="config.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --noir:#0d0d0d;--charbon:#1a1a1a;--ardoise:#2c2c2c;
+  --cendre:#6b6b6b;--ivoire:#f5f0e8;--or:#c9a84c;--or-pale:#e8d5a3;
+  --success:rgba(74,222,128,.8);--warning:rgba(251,191,36,.8);--danger:rgba(239,68,68,.8);
+  --sidebar:240px;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--noir);font-family:'DM Sans',sans-serif;font-weight:300;color:var(--ivoire);display:flex}
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:var(--noir)}
+::-webkit-scrollbar-thumb{background:var(--ardoise);border-radius:2px}
+::-webkit-scrollbar-thumb:hover{background:var(--or)}
+.sidebar{width:var(--sidebar);min-height:100vh;background:var(--charbon);border-right:1px solid var(--ardoise);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;transition:transform .3s;flex-shrink:0}
+.sidebar-logo{padding:1.75rem 1.5rem 1.5rem;border-bottom:1px solid var(--ardoise)}
+.sidebar-logo .cg{font-family:'Cormorant Garamond',serif;font-size:1.75rem;font-weight:300;letter-spacing:.12em;color:var(--ivoire)}
+.sidebar-logo .cg span{color:var(--or)}
+.sidebar-logo .admin-label{color:rgba(245,240,232,.3);font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;display:block;margin-top:.3rem}
+.nav{flex:1;padding:.75rem 0;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:.75rem;padding:.7rem 1.5rem;background:none;border:none;color:rgba(245,240,232,.45);font-size:.82rem;cursor:pointer;transition:all .2s;text-align:left;width:100%;border-left:2px solid transparent;font-family:'DM Sans',sans-serif;letter-spacing:.02em;position:relative;text-decoration:none}
+.nav-item:hover{color:rgba(245,240,232,.8);background:rgba(255,255,255,.02)}
+.nav-item.active{color:var(--or);background:rgba(201,168,76,.07);border-left-color:var(--or)}
+.nav-icon{font-size:.95rem;width:20px;text-align:center;flex-shrink:0}
+.nav-badge{margin-left:auto;background:var(--or);color:var(--noir);font-size:.6rem;font-weight:600;padding:1px 6px;border-radius:10px;min-width:18px;text-align:center}
+.nav-badge.danger{background:var(--danger);color:#fff}
+.sidebar-profile{padding:1rem 1.25rem;border-top:1px solid var(--ardoise);display:flex;align-items:center;gap:.75rem}
+.profile-avatar{width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid var(--ardoise);flex-shrink:0;background:var(--ardoise);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;color:var(--or);font-size:1rem}
+.profile-info{flex:1;overflow:hidden}
+.profile-name{color:var(--ivoire);font-size:.8rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.profile-email{color:rgba(245,240,232,.3);font-size:.65rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.logout-btn{background:none;border:none;color:rgba(245,240,232,.25);cursor:pointer;font-size:1rem;padding:.25rem;transition:color .2s;flex-shrink:0}
+.logout-btn:hover{color:var(--danger)}
+.main{margin-left:var(--sidebar);flex:1;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+.mobile-header{display:none;align-items:center;justify-content:space-between;padding:.85rem 1.25rem;border-bottom:1px solid var(--ardoise);background:var(--charbon);position:sticky;top:0;z-index:40}
+.menu-btn{background:none;border:none;color:var(--ivoire);font-size:1.2rem;cursor:pointer;line-height:1}
+.content{padding:2rem;flex:1}
+.page-header{margin-bottom:2rem;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.page-title{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--ivoire);line-height:1}
+.page-sub{color:rgba(245,240,232,.35);font-size:.8rem;margin-top:.35rem}
+.btn-gold{background:var(--or);color:var(--noir);border:none;padding:.65rem 1.4rem;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .2s}
+.btn-gold:hover{background:var(--or-pale)}
+.btn-outline-sm{background:none;border:1px solid var(--ardoise);color:rgba(245,240,232,.6);padding:.5rem 1rem;font-size:.72rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+.btn-outline-sm:hover{border-color:var(--or);color:var(--or)}
+.theme-tabs{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:1.5rem}
+.theme-tab{background:none;border:1px solid var(--ardoise);color:rgba(245,240,232,.5);padding:.5rem 1rem;font-size:.72rem;cursor:pointer;display:flex;align-items:center;gap:.5rem;transition:all .2s;font-family:'DM Sans',sans-serif}
+.theme-tab.active{border-color:var(--or);color:var(--or);background:rgba(201,168,76,.07)}
+.theme-tab-count{padding:1px 6px;border-radius:8px;font-size:.62rem;font-weight:600;background:var(--ardoise);color:rgba(245,240,232,.5)}
+.theme-tab.active .theme-tab-count{background:var(--or);color:var(--noir)}
+.photo-grid-admin{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:.6rem}
+.photo-admin-card{position:relative;aspect-ratio:1;background:var(--ardoise);overflow:hidden;cursor:grab}
+.photo-admin-card.dragging{opacity:.4;cursor:grabbing}
+.photo-admin-card.drag-over{outline:2px dashed var(--or)}
+.photo-admin-card img{width:100%;height:100%;object-fit:cover;display:block;transition:all .4s;pointer-events:none}
+.photo-admin-card:hover img{filter:brightness(.5)}
+.photo-admin-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:.5rem;opacity:0;transition:opacity .2s;flex-wrap:wrap;padding:.5rem}
+.photo-admin-card:hover .photo-admin-overlay{opacity:1}
+.ph-btn{background:rgba(13,13,13,.85);border:1px solid rgba(245,240,232,.2);color:var(--ivoire);width:34px;height:34px;border-radius:2px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.ph-btn:hover{border-color:var(--or);color:var(--or)}
+.ph-btn.danger:hover{border-color:var(--danger);color:var(--danger)}
+.theme-select{background:rgba(13,13,13,.9);border:1px solid rgba(245,240,232,.2);color:var(--ivoire);font-size:.65rem;padding:.2rem .4rem;cursor:pointer;font-family:'DM Sans',sans-serif;width:120px}
+.upload-zone{border:1px dashed var(--ardoise);padding:2.5rem;text-align:center;cursor:pointer;transition:all .3s;margin-bottom:1.5rem}
+.upload-zone:hover,.upload-zone.drag-active{border-color:var(--or);background:rgba(201,168,76,.03)}
+.upload-icon{font-size:2rem;margin-bottom:.5rem;opacity:.4}
+.upload-text{color:rgba(245,240,232,.4);font-size:.82rem}
+.upload-text strong{color:var(--or);font-weight:400}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:45}
+.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--charbon);border:1px solid var(--ardoise);padding:.85rem 1.25rem;font-size:.8rem;color:var(--ivoire);z-index:200;display:flex;align-items:center;gap:.65rem;animation:slideIn .3s ease;max-width:300px}
+.toast.success{border-color:rgba(74,222,128,.35);color:#86efac}
+.toast.error{border-color:rgba(239,68,68,.35);color:#fca5a5}
+@keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeOut{from{opacity:1}to{opacity:0}}
+.empty-state{text-align:center;padding:4rem 2rem;color:rgba(245,240,232,.25);font-size:.85rem}
+.empty-icon{font-size:2.5rem;margin-bottom:1rem;opacity:.3}
+.reorder-hint{color:rgba(245,240,232,.25);font-size:.72rem;margin-bottom:1rem;letter-spacing:.04em}
+@media(max-width:768px){
+  .sidebar{transform:translateX(-100%)}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  .mobile-header{display:flex}
+  .overlay.show{display:block}
+}
+</style>
+</head>
+<body>
+
+<div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="cg">CG<span>.</span></div>
+    <span class="admin-label">Administration</span>
+  </div>
+  <nav class="nav">
+    <a class="nav-item" href="dashboard.html"><span class="nav-icon">◈</span> Dashboard</a>
+    <a class="nav-item active" href="galerie.html"><span class="nav-icon">◻</span> Galerie</a>
+    <a class="nav-item" href="prestations.html"><span class="nav-icon">◇</span> Prestations</a>
+    <a class="nav-item" href="avis.html"><span class="nav-icon">★</span> Avis clients<span id="badge-avis" class="nav-badge" style="background:rgba(251,191,36,.8);display:none"></span></a>
+    <a class="nav-item" href="messages.html"><span class="nav-icon">◉</span> Messages<span id="badge-messages" class="nav-badge danger" style="display:none"></span></a>
+    <a class="nav-item" href="stats.html"><span class="nav-icon">◎</span> Statistiques</a>
+  </nav>
+  <div class="sidebar-profile">
+    <div class="profile-avatar" id="profile-avatar">C</div>
+    <div class="profile-info">
+      <div class="profile-name" id="profile-name"></div>
+      <div class="profile-email" id="profile-email"></div>
+    </div>
+    <button class="logout-btn" onclick="logout()" title="Déconnexion">⏻</button>
+  </div>
+</aside>
+
+<div class="main">
+  <div class="mobile-header">
+    <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+    <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;letter-spacing:.1em">CG<span style="color:var(--or)">.</span></div>
+    <div style="width:24px"></div>
+  </div>
+
+  <div class="content">
+    <div class="page-header">
+      <div>
+        <div class="page-title">Galerie</div>
+        <div class="page-sub" id="page-sub">Chargement…</div>
+      </div>
+      <button class="btn-gold" onclick="document.getElementById('file-input').click()">+ Ajouter des photos</button>
+    </div>
+
+    <div class="upload-zone" id="upload-zone">
+      <div class="upload-icon">⬆</div>
+      <div class="upload-text">Glissez vos photos ici ou <strong>parcourez</strong></div>
+    </div>
+    <input type="file" id="file-input" multiple accept="image/*" style="display:none"/>
+
+    <div class="theme-tabs" id="theme-tabs"></div>
+
+    <p class="reorder-hint">Glissez-déposez les photos pour les réordonner</p>
+
+    <div class="photo-grid-admin" id="photo-grid"></div>
+  </div>
+</div>
+
+<script>
+const API = (window.ADMIN_CONFIG && window.ADMIN_CONFIG.API_URL) || 'http://localhost:5000'
+
+const THEMES = [
+  { key: 'mariage',    label: 'Mariage' },
+  { key: 'naissance',  label: 'Naissance' },
+  { key: 'portrait',   label: 'Portrait' },
+  { key: 'animalier',  label: 'Animalier' },
+  { key: 'culinaire',  label: 'Culinaire' },
+  { key: 'evenement',  label: 'Événement' },
+  { key: 'bapteme',    label: 'Baptême' },
+  { key: 'babyshower', label: 'Baby Shower' },
+]
+
+let allPhotos = {}
+let activeTheme = 'mariage'
+let dragSrcIndex = null
+
+/* ── Session ─────────────────────────────────────────────── */
+async function checkSession() {
+  try {
+    const res = await fetch(API + '/api/auth/me', { credentials: 'include' })
+    const data = await res.json()
+    if (!data.connecte) { window.location.href = 'login.html'; return null }
+    const pn = document.getElementById('profile-name')
+    const pe = document.getElementById('profile-email')
+    const pa = document.getElementById('profile-avatar')
+    if (pn) pn.textContent = data.user.displayName || ''
+    if (pe) pe.textContent = data.user.email || ''
+    if (pa && data.user.displayName) pa.textContent = data.user.displayName[0]
+    return data.user
+  } catch(e) { window.location.href = 'login.html'; return null }
+}
+
+async function logout() {
+  if (!confirm('Se déconnecter ?')) return
+  try { await fetch(API + '/api/auth/logout', { method: 'POST', credentials: 'include' }) } catch(e) {}
+  window.location.href = 'login.html'
+}
+
+async function loadBadges() {
+  try {
+    const res = await fetch(API + '/api/stats', { credentials: 'include' })
+    if (!res.ok) return
+    const s = await res.json()
+    const bMsg = document.getElementById('badge-messages')
+    if (bMsg) { if (s.messages.nonLus > 0) { bMsg.textContent = s.messages.nonLus; bMsg.style.display = '' } else bMsg.style.display = 'none' }
+    const bAvis = document.getElementById('badge-avis')
+    if (bAvis) { if (s.avis.enAttente > 0) { bAvis.textContent = s.avis.enAttente; bAvis.style.display = '' } else bAvis.style.display = 'none' }
+  } catch(e) {}
+}
+
+function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('show') }
+function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show') }
+
+function showToast(text, type = 'success') {
+  const t = document.createElement('div')
+  t.className = `toast ${type}`
+  t.innerHTML = `<span>${type === 'success' ? '✓' : '✕'}</span> ${text}`
+  document.body.appendChild(t)
+  setTimeout(() => { t.style.animation = 'fadeOut .3s ease forwards'; setTimeout(() => t.remove(), 300) }, 2500)
+}
+
+/* ── Galerie ─────────────────────────────────────────────── */
+async function loadGalerie() {
+  try {
+    const res = await fetch(API + '/api/galerie', { credentials: 'include' })
+    if (!res.ok) throw new Error()
+    allPhotos = await res.json()
+  } catch(e) {
+    allPhotos = {}
+    showToast('Impossible de charger la galerie', 'error')
+  }
+  renderTabs()
+  renderGrid()
+  updatePageSub()
+}
+
+function totalPhotos() {
+  return THEMES.reduce((acc, t) => acc + ((allPhotos[t.key] || []).length), 0)
+}
+
+function updatePageSub() {
+  const sub = document.getElementById('page-sub')
+  const label = THEMES.find(t => t.key === activeTheme)?.label || activeTheme
+  sub.textContent = `${totalPhotos()} photos · ${label}`
+}
+
+function renderTabs() {
+  const container = document.getElementById('theme-tabs')
+  container.innerHTML = ''
+  THEMES.forEach(t => {
+    const count = (allPhotos[t.key] || []).length
+    const btn = document.createElement('button')
+    btn.className = 'theme-tab' + (t.key === activeTheme ? ' active' : '')
+    btn.innerHTML = `${t.label} <span class="theme-tab-count">${count}</span>`
+    btn.onclick = () => { activeTheme = t.key; renderTabs(); renderGrid(); updatePageSub() }
+    container.appendChild(btn)
+  })
+}
+
+function renderGrid() {
+  const grid = document.getElementById('photo-grid')
+  const photos = allPhotos[activeTheme] || []
+  grid.innerHTML = ''
+
+  if (photos.length === 0) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">◻</div>Aucune photo dans ce thème</div>`
+    return
+  }
+
+  photos.forEach((photo, index) => {
+    const card = document.createElement('div')
+    card.className = 'photo-admin-card'
+    card.draggable = true
+    card.dataset.id = photo.id
+    card.dataset.index = index
+
+    const img = document.createElement('img')
+    img.src = photo.url
+    img.alt = photo.alt || ''
+    img.loading = 'lazy'
+
+    const overlay = document.createElement('div')
+    overlay.className = 'photo-admin-overlay'
+
+    /* Bouton changer de thème */
+    const btnTheme = document.createElement('button')
+    btnTheme.className = 'ph-btn'
+    btnTheme.title = 'Changer de thème'
+    btnTheme.textContent = '⇄'
+    btnTheme.onclick = (e) => { e.stopPropagation(); toggleThemeSelect(card, photo) }
+
+    /* Bouton supprimer */
+    const btnDel = document.createElement('button')
+    btnDel.className = 'ph-btn danger'
+    btnDel.title = 'Supprimer'
+    btnDel.textContent = '✕'
+    btnDel.onclick = (e) => { e.stopPropagation(); deletePhoto(photo.id, card) }
+
+    overlay.appendChild(btnTheme)
+    overlay.appendChild(btnDel)
+    card.appendChild(img)
+    card.appendChild(overlay)
+
+    /* Drag & drop réordonnement */
+    card.addEventListener('dragstart', (e) => {
+      dragSrcIndex = index
+      card.classList.add('dragging')
+      e.dataTransfer.effectAllowed = 'move'
+    })
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging')
+      grid.querySelectorAll('.photo-admin-card').forEach(c => c.classList.remove('drag-over'))
+    })
+    card.addEventListener('dragover', (e) => {
+      e.preventDefault()
+      e.dataTransfer.dropEffect = 'move'
+      grid.querySelectorAll('.photo-admin-card').forEach(c => c.classList.remove('drag-over'))
+      card.classList.add('drag-over')
+    })
+    card.addEventListener('drop', (e) => {
+      e.preventDefault()
+      card.classList.remove('drag-over')
+      const destIndex = parseInt(card.dataset.index)
+      if (dragSrcIndex === null || dragSrcIndex === destIndex) return
+      const arr = allPhotos[activeTheme]
+      const [moved] = arr.splice(dragSrcIndex, 1)
+      arr.splice(destIndex, 0, moved)
+      dragSrcIndex = null
+      renderGrid()
+      saveReorder()
+    })
+
+    grid.appendChild(card)
+  })
+}
+
+function toggleThemeSelect(card, photo) {
+  /* Retire un select déjà ouvert sur cette carte */
+  const existing = card.querySelector('.theme-select')
+  if (existing) { existing.remove(); return }
+
+  const select = document.createElement('select')
+  select.className = 'theme-select'
+
+  THEMES.forEach(t => {
+    if (t.key === photo.theme) return
+    const opt = document.createElement('option')
+    opt.value = t.key
+    opt.textContent = t.label
+    select.appendChild(opt)
+  })
+
+  select.addEventListener('change', async () => {
+    const newTheme = select.value
+    select.remove()
+    await changePhotoTheme(photo.id, newTheme, photo)
+  })
+
+  select.addEventListener('click', e => e.stopPropagation())
+
+  const overlay = card.querySelector('.photo-admin-overlay')
+  overlay.appendChild(select)
+}
+
+async function changePhotoTheme(id, newTheme, photo) {
+  try {
+    const res = await fetch(`${API}/api/galerie/${id}/theme`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ theme: newTheme })
+    })
+    if (!res.ok) throw new Error()
+    /* Déplacer la photo dans allPhotos localement */
+    const srcArr = allPhotos[activeTheme] || []
+    const idx = srcArr.findIndex(p => p.id === id)
+    if (idx !== -1) {
+      const [moved] = srcArr.splice(idx, 1)
+      moved.theme = newTheme
+      if (!allPhotos[newTheme]) allPhotos[newTheme] = []
+      allPhotos[newTheme].push(moved)
+    }
+    renderTabs()
+    renderGrid()
+    updatePageSub()
+    showToast('Thème modifié')
+  } catch(e) {
+    showToast('Erreur lors du changement de thème', 'error')
+  }
+}
+
+async function deletePhoto(id, card) {
+  if (!confirm('Supprimer cette photo définitivement ?')) return
+  try {
+    const res = await fetch(`${API}/api/galerie/${id}`, {
+      method: 'DELETE',
+      credentials: 'include'
+    })
+    if (!res.ok) throw new Error()
+    const arr = allPhotos[activeTheme] || []
+    const idx = arr.findIndex(p => p.id === id)
+    if (idx !== -1) arr.splice(idx, 1)
+    card.remove()
+    renderTabs()
+    updatePageSub()
+    if ((allPhotos[activeTheme] || []).length === 0) renderGrid()
+    showToast('Photo supprimée')
+  } catch(e) {
+    showToast('Erreur lors de la suppression', 'error')
+  }
+}
+
+async function saveReorder() {
+  const photos = allPhotos[activeTheme] || []
+  const ordre = photos.map((p, i) => ({ id: p.id, ordre: i }))
+  try {
+    await fetch(`${API}/api/galerie/reorder`, {
+      method: 'PATCH',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ordre })
+    })
+  } catch(e) {
+    showToast('Erreur lors de la sauvegarde de l\'ordre', 'error')
+  }
+}
+
+/* ── Upload ──────────────────────────────────────────────── */
+async function uploadFiles(files) {
+  if (!files || files.length === 0) return
+  const formData = new FormData()
+  formData.append('theme', activeTheme)
+  Array.from(files).forEach(f => formData.append('photos', f))
+
+  showToast(`Envoi de ${files.length} photo${files.length > 1 ? 's' : ''}…`, 'success')
+
+  try {
+    const res = await fetch(`${API}/api/galerie/upload`, {
+      method: 'POST',
+      credentials: 'include',
+      body: formData
+    })
+    if (!res.ok) throw new Error()
+    showToast(`${files.length} photo${files.length > 1 ? 's' : ''} ajoutée${files.length > 1 ? 's' : ''}`)
+    await loadGalerie()
+  } catch(e) {
+    showToast('Erreur lors de l\'upload', 'error')
+  }
+}
+
+/* ── Upload zone events ──────────────────────────────────── */
+const uploadZone = document.getElementById('upload-zone')
+const fileInput = document.getElementById('file-input')
+
+uploadZone.addEventListener('click', () => fileInput.click())
+
+uploadZone.addEventListener('dragenter', (e) => { e.preventDefault(); uploadZone.classList.add('drag-active') })
+uploadZone.addEventListener('dragover',  (e) => { e.preventDefault(); uploadZone.classList.add('drag-active') })
+uploadZone.addEventListener('dragleave', (e) => { if (!uploadZone.contains(e.relatedTarget)) uploadZone.classList.remove('drag-active') })
+uploadZone.addEventListener('drop', (e) => {
+  e.preventDefault()
+  uploadZone.classList.remove('drag-active')
+  uploadFiles(e.dataTransfer.files)
+})
+
+fileInput.addEventListener('change', () => {
+  uploadFiles(fileInput.files)
+  fileInput.value = ''
+})
+
+/* ── Init ────────────────────────────────────────────────── */
+checkSession().then(user => {
+  if (!user) return
+  loadBadges()
+  loadGalerie()
+})
+</script>
+</body>
+</html>

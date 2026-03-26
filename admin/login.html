@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Admin — Connexion · Cédric Grimere</title>
+<title>Admin — Connexion</title>
 <meta name="robots" content="noindex, nofollow"/>
+<script src="config.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
@@ -258,15 +259,11 @@ body{
 
 <!-- Nom + ville bas droite -->
 <div style="position:fixed;bottom:2.5rem;right:2.5rem;z-index:5;text-align:right;pointer-events:none;animation:fadeInLabel 1.2s ease .8s both">
-  <p style="font-family:'Cormorant Garamond',serif;font-size:clamp(1rem,2vw,1.4rem);font-weight:300;color:rgba(245,240,232,.75);letter-spacing:.06em;line-height:1.2">
-    Cédric Grimere
-  </p>
+  <p id="cfg-nom" style="font-family:'Cormorant Garamond',serif;font-size:clamp(1rem,2vw,1.4rem);font-weight:300;color:rgba(245,240,232,.75);letter-spacing:.06em;line-height:1.2"></p>
   <p style="font-family:'Cormorant Garamond',serif;font-size:clamp(.85rem,1.5vw,1.1rem);font-weight:300;font-style:italic;color:var(--or);letter-spacing:.08em;margin-top:.2rem">
     Photographe
   </p>
-  <p style="font-size:.62rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(245,240,232,.25);margin-top:.4rem">
-    Marseille &amp; Bouches-du-Rhône
-  </p>
+  <p id="cfg-ville" style="font-size:.62rem;letter-spacing:.25em;text-transform:uppercase;color:rgba(245,240,232,.25);margin-top:.4rem"></p>
 </div>
 <style>
 @keyframes fadeInLabel{
@@ -316,6 +313,13 @@ if(new URLSearchParams(window.location.search).get('error') === 'acces_refuse'){
   document.getElementById('errorBox').classList.remove('hidden')
 }
 
+;(function(){
+  const C = window.ADMIN_CONFIG || {}
+  const n = document.getElementById('cfg-nom'); if(n) n.textContent = C.NOM || ''
+  const v = document.getElementById('cfg-ville'); if(v) v.textContent = C.VILLE || ''
+  if(C.NOM) document.title = 'Admin — Connexion · ' + C.NOM
+})()
+
 function handleLogin(e) {
   e.preventDefault()
   const btn = document.getElementById('loginBtn')
@@ -327,7 +331,8 @@ function handleLogin(e) {
     Connexion en cours...
   `
   btn.style.pointerEvents = 'none'
-  setTimeout(() => { window.location.href = 'dashboard.html' }, 1500)
+  const API = (window.ADMIN_CONFIG && window.ADMIN_CONFIG.API_URL) || 'http://localhost:5000'
+  window.location.href = API + '/api/auth/google'
 }
 </script>
 </body>

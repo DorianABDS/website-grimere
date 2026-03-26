@@ -36,7 +36,15 @@ services:
         sync: false
       - key: CLOUDINARY_API_SECRET
         sync: false
+      - key: CLOUDINARY_FOLDER
+        sync: false
       - key: FRONTEND_URL
         sync: false
       - key: BACKEND_URL
+        sync: false
+      - key: PHOTOGRAPHE_NOM
+        sync: false
+      - key: PHOTOGRAPHE_VILLE
+        sync: false
+      - key: PHOTOGRAPHE_INSTAGRAM
         sync: false

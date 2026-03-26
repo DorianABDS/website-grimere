@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prestations — Admin CG</title>
+  <script src="config.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --noir:#0d0d0d;--charbon:#1a1a1a;--ardoise:#2c2c2c;
+      --cendre:#6b6b6b;--ivoire:#f5f0e8;--or:#c9a84c;--or-pale:#e8d5a3;
+      --success:rgba(74,222,128,.8);--warning:rgba(251,191,36,.8);--danger:rgba(239,68,68,.8);
+      --sidebar:240px;
+    }
+    html,body{height:100%;overflow:hidden}
+    body{background:var(--noir);font-family:'DM Sans',sans-serif;font-weight:300;color:var(--ivoire);display:flex}
+    ::-webkit-scrollbar{width:3px;height:3px}
+    ::-webkit-scrollbar-track{background:var(--noir)}
+    ::-webkit-scrollbar-thumb{background:var(--ardoise);border-radius:2px}
+    ::-webkit-scrollbar-thumb:hover{background:var(--or)}
+    .sidebar{width:var(--sidebar);min-height:100vh;background:var(--charbon);border-right:1px solid var(--ardoise);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;transition:transform .3s;flex-shrink:0}
+    .sidebar-logo{padding:1.75rem 1.5rem 1.5rem;border-bottom:1px solid var(--ardoise)}
+    .sidebar-logo .cg{font-family:'Cormorant Garamond',serif;font-size:1.75rem;font-weight:300;letter-spacing:.12em;color:var(--ivoire)}
+    .sidebar-logo .cg span{color:var(--or)}
+    .sidebar-logo .admin-label{color:rgba(245,240,232,.3);font-size:.62rem;letter-spacing:.28em;text-transform:uppercase;display:block;margin-top:.3rem}
+    .nav{flex:1;padding:.75rem 0;overflow-y:auto}
+    .nav-item{display:flex;align-items:center;gap:.75rem;padding:.7rem 1.5rem;background:none;border:none;color:rgba(245,240,232,.45);font-size:.82rem;cursor:pointer;transition:all .2s;text-align:left;width:100%;border-left:2px solid transparent;font-family:'DM Sans',sans-serif;letter-spacing:.02em;position:relative;text-decoration:none}
+    .nav-item:hover{color:rgba(245,240,232,.8);background:rgba(255,255,255,.02)}
+    .nav-item.active{color:var(--or);background:rgba(201,168,76,.07);border-left-color:var(--or)}
+    .nav-icon{font-size:.95rem;width:20px;text-align:center;flex-shrink:0}
+    .nav-badge{margin-left:auto;background:var(--or);color:var(--noir);font-size:.6rem;font-weight:600;padding:1px 6px;border-radius:10px;min-width:18px;text-align:center}
+    .nav-badge.danger{background:var(--danger);color:#fff}
+    .sidebar-profile{padding:1rem 1.25rem;border-top:1px solid var(--ardoise);display:flex;align-items:center;gap:.75rem}
+    .profile-avatar{width:34px;height:34px;border-radius:50%;border:1px solid var(--ardoise);flex-shrink:0;background:var(--ardoise);display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;color:var(--or);font-size:1rem}
+    .profile-info{flex:1;overflow:hidden}
+    .profile-name{color:var(--ivoire);font-size:.8rem;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .profile-email{color:rgba(245,240,232,.3);font-size:.65rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .logout-btn{background:none;border:none;color:rgba(245,240,232,.25);cursor:pointer;font-size:1rem;padding:.25rem;transition:color .2s;flex-shrink:0}
+    .logout-btn:hover{color:var(--danger)}
+    .main{margin-left:var(--sidebar);flex:1;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+    .mobile-header{display:none;align-items:center;justify-content:space-between;padding:.85rem 1.25rem;border-bottom:1px solid var(--ardoise);background:var(--charbon);position:sticky;top:0;z-index:40}
+    .menu-btn{background:none;border:none;color:var(--ivoire);font-size:1.2rem;cursor:pointer;line-height:1}
+    .content{padding:2rem;flex:1}
+    .page-header{margin-bottom:2rem;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+    .page-title{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--ivoire);line-height:1}
+    .page-sub{color:rgba(245,240,232,.35);font-size:.8rem;margin-top:.35rem}
+    .btn-gold{background:var(--or);color:var(--noir);border:none;padding:.65rem 1.4rem;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .2s}
+    .btn-gold:hover{background:var(--or-pale)}
+    .btn-outline-sm{background:none;border:1px solid var(--ardoise);color:rgba(245,240,232,.6);padding:.5rem 1rem;font-size:.72rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+    .btn-outline-sm:hover{border-color:var(--or);color:var(--or)}
+    .btn-approve{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:#86efac;padding:.3rem .75rem;font-size:.68rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+    .btn-approve:hover{background:rgba(74,222,128,.2)}
+    .btn-refuse{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5;padding:.3rem .75rem;font-size:.68rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+    .btn-refuse:hover{background:rgba(239,68,68,.2)}
+    .btn-delete-sm{background:none;border:1px solid rgba(239,68,68,.2);color:rgba(239,68,68,.6);padding:.3rem .75rem;font-size:.68rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
+    .btn-delete-sm:hover{border-color:rgba(239,68,68,.5);color:#fca5a5}
+    .tag-pill{display:inline-block;padding:.2rem .6rem;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;border-radius:2px}
+    .tag-pill.attente{background:rgba(251,191,36,.1);color:#fcd34d;border:1px solid rgba(251,191,36,.25)}
+    .tag-pill.approuve{background:rgba(74,222,128,.1);color:#86efac;border:1px solid rgba(74,222,128,.25)}
+    .tag-pill.refuse{background:rgba(239,68,68,.1);color:#fca5a5;border:1px solid rgba(239,68,68,.25)}
+    .presta-list{display:flex;flex-direction:column;gap:.65rem}
+    .presta-card{background:var(--charbon);border:1px solid var(--ardoise);padding:1.1rem 1.35rem;display:flex;justify-content:space-between;align-items:flex-start;gap:1rem;flex-wrap:wrap;transition:border-color .2s}
+    .presta-card:hover{border-color:rgba(201,168,76,.25)}
+    .presta-card.inactive{opacity:.45}
+    .presta-card.popular{border-color:rgba(201,168,76,.5)}
+    .presta-left{flex:1}
+    .presta-header{display:flex;align-items:center;gap:.65rem;margin-bottom:.3rem;flex-wrap:wrap}
+    .presta-name{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:300;color:var(--ivoire)}
+    .presta-badge{background:var(--or);color:var(--noir);font-size:.58rem;padding:1px 7px;letter-spacing:.12em;text-transform:uppercase}
+    .presta-status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+    .presta-prix{color:var(--or);font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:300;margin-bottom:.2rem}
+    .presta-sous{color:rgba(245,240,232,.35);font-size:.72rem;margin-bottom:.65rem}
+    .presta-details{list-style:none}
+    .presta-details li{color:rgba(245,240,232,.5);font-size:.75rem;padding:.1rem 0}
+    .presta-details li::before{content:'— ';color:var(--or)}
+    .presta-actions{display:flex;flex-direction:column;gap:.4rem;flex-shrink:0}
+    .avis-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:.75rem}
+    .avis-card{background:var(--charbon);border:1px solid var(--ardoise);padding:1.25rem;transition:border-color .2s}
+    .avis-card:hover{border-color:rgba(201,168,76,.3)}
+    .avis-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:.5rem;gap:.5rem}
+    .avis-nom{font-size:.88rem;color:var(--ivoire);font-weight:500}
+    .avis-stars{color:var(--or);font-size:.85rem;letter-spacing:.08em;flex-shrink:0}
+    .avis-presta{color:rgba(245,240,232,.35);font-size:.72rem;margin-bottom:.6rem}
+    .avis-texte{color:rgba(245,240,232,.6);font-size:.8rem;font-style:italic;line-height:1.6;margin-bottom:.85rem}
+    .avis-footer{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:.5rem}
+    .avis-actions{display:flex;gap:.4rem;flex-wrap:wrap}
+    .avis-date{color:rgba(245,240,232,.25);font-size:.68rem}
+    .stat-banner{background:var(--charbon);border:1px solid var(--ardoise);padding:1.25rem 1.5rem;display:flex;align-items:center;gap:2rem;margin-bottom:1.5rem;flex-wrap:wrap}
+    .stat-banner-val{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--or)}
+    .stat-banner-lbl{color:rgba(245,240,232,.45);font-size:.75rem}
+    .modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;align-items:center;justify-content:center;padding:1rem}
+    .modal-bg.open{display:flex}
+    .modal{background:var(--charbon);border:1px solid var(--ardoise);padding:2rem;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;position:relative}
+    .modal-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--ivoire);margin-bottom:1.5rem}
+    .modal-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:rgba(245,240,232,.35);font-size:1.2rem;cursor:pointer;transition:color .2s}
+    .modal-close:hover{color:var(--ivoire)}
+    .form-group{margin-bottom:1rem}
+    .form-label{display:block;color:rgba(245,240,232,.4);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:.45rem}
+    .form-input{width:100%;background:var(--noir);border:1px solid var(--ardoise);color:var(--ivoire);padding:.65rem .85rem;font-size:.85rem;font-family:'DM Sans',sans-serif;font-weight:300;transition:border-color .2s;outline:none}
+    .form-input:focus{border-color:var(--or)}
+    .form-textarea{min-height:80px;resize:vertical}
+    .form-actions{display:flex;justify-content:flex-end;gap:.75rem;margin-top:1.5rem}
+    .form-check{display:flex;align-items:center;gap:.6rem;cursor:pointer}
+    .form-check input[type=checkbox]{width:15px;height:15px;accent-color:var(--or);cursor:pointer;flex-shrink:0}
+    .form-check-label{color:rgba(245,240,232,.6);font-size:.82rem}
+    .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:45}
+    .toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--charbon);border:1px solid var(--ardoise);padding:.85rem 1.25rem;font-size:.8rem;color:var(--ivoire);z-index:200;display:flex;align-items:center;gap:.65rem;animation:slideIn .3s ease;max-width:300px}
+    .toast.success{border-color:rgba(74,222,128,.35);color:#86efac}
+    .toast.error{border-color:rgba(239,68,68,.35);color:#fca5a5}
+    .loading{color:rgba(245,240,232,.3);font-size:.85rem;padding:2rem 0;text-align:center}
+    @keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeOut{from{opacity:1}to{opacity:0}}
+    @media(max-width:768px){
+      .sidebar{transform:translateX(-100%)}
+      .sidebar.open{transform:translateX(0)}
+      .main{margin-left:0}
+      .mobile-header{display:flex}
+      .overlay.show{display:block}
+    }
+  </style>
+</head>
+<body>
+
+  <div class="overlay" id="overlay" onclick="closeSidebar()"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="cg">CG<span>.</span></div>
+      <span class="admin-label">Administration</span>
+    </div>
+    <nav class="nav">
+      <a class="nav-item" href="dashboard.html"><span class="nav-icon">◈</span> Dashboard</a>
+      <a class="nav-item" href="galerie.html"><span class="nav-icon">◻</span> Galerie</a>
+      <a class="nav-item active" href="prestations.html"><span class="nav-icon">◇</span> Prestations</a>
+      <a class="nav-item" href="avis.html"><span class="nav-icon">★</span> Avis clients<span id="badge-avis" class="nav-badge" style="background:rgba(251,191,36,.8);display:none"></span></a>
+      <a class="nav-item" href="messages.html"><span class="nav-icon">◉</span> Messages<span id="badge-messages" class="nav-badge danger" style="display:none"></span></a>
+      <a class="nav-item" href="stats.html"><span class="nav-icon">◎</span> Statistiques</a>
+    </nav>
+    <div class="sidebar-profile">
+      <div class="profile-avatar" id="profile-avatar">C</div>
+      <div class="profile-info">
+        <div class="profile-name" id="profile-name"></div>
+        <div class="profile-email" id="profile-email"></div>
+      </div>
+      <button class="logout-btn" onclick="logout()" title="Déconnexion">⏻</button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="mobile-header">
+      <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+      <div style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;letter-spacing:.08em">Prestations</div>
+      <div style="width:24px"></div>
+    </div>
+
+    <div class="content">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Prestations</div>
+          <div class="page-sub" id="page-sub">Chargement…</div>
+        </div>
+      </div>
+
+      <div class="presta-list" id="presta-list">
+        <div class="loading">Chargement des prestations…</div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal édition -->
+  <div class="modal-bg" id="modal-edit">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <div class="modal-title">Modifier la prestation</div>
+      <form id="edit-form" onsubmit="savePrestation(event)">
+        <input type="hidden" id="edit-id">
+        <div class="form-group">
+          <label class="form-label" for="edit-titre">Titre</label>
+          <input class="form-input" type="text" id="edit-titre" required placeholder="Nom de la prestation">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="edit-prix">Prix</label>
+          <input class="form-input" type="text" id="edit-prix" required placeholder="Ex: 120€">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="edit-sous-titre">Sous-titre</label>
+          <input class="form-input" type="text" id="edit-sous-titre" placeholder="Description courte">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="edit-badge">Badge</label>
+          <input class="form-input" type="text" id="edit-badge" placeholder="Ex: Populaire, Nouveau…">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="edit-details">Détails <span style="text-transform:none;letter-spacing:0;font-size:.62rem">(une ligne par détail)</span></label>
+          <textarea class="form-input form-textarea" id="edit-details" placeholder="Prestation incluse&#10;Autre prestation…"></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-check">
+            <input type="checkbox" id="edit-populaire">
+            <span class="form-check-label">Mettre en avant (populaire)</span>
+          </label>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn-outline-sm" onclick="closeModal()">Annuler</button>
+          <button type="submit" class="btn-gold">Enregistrer</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const API = (window.ADMIN_CONFIG && window.ADMIN_CONFIG.API_URL) || 'http://localhost:5000'
+
+    async function checkSession() {
+      try {
+        const res = await fetch(API + '/api/auth/me', { credentials: 'include' })
+        const data = await res.json()
+        if (!data.connecte) { window.location.href = 'login.html'; return null }
+        const pn = document.getElementById('profile-name'); if(pn) pn.textContent = data.user.displayName || ''
+        const pe = document.getElementById('profile-email'); if(pe) pe.textContent = data.user.email || ''
+        const pa = document.getElementById('profile-avatar'); if(pa && data.user.displayName) pa.textContent = data.user.displayName[0]
+        return data.user
+      } catch(e) { window.location.href = 'login.html'; return null }
+    }
+
+    async function logout() {
+      if (!confirm('Se déconnecter ?')) return
+      try { await fetch(API + '/api/auth/logout', { method: 'POST', credentials: 'include' }) } catch(e) {}
+      window.location.href = 'login.html'
+    }
+
+    async function loadBadges() {
+      try {
+        const res = await fetch(API + '/api/stats', { credentials: 'include' })
+        if (!res.ok) return
+        const s = await res.json()
+        const bMsg = document.getElementById('badge-messages')
+        if(bMsg) { if(s.messages.nonLus > 0){ bMsg.textContent = s.messages.nonLus; bMsg.style.display = '' } else bMsg.style.display = 'none' }
+        const bAvis = document.getElementById('badge-avis')
+        if(bAvis) { if(s.avis.enAttente > 0){ bAvis.textContent = s.avis.enAttente; bAvis.style.display = '' } else bAvis.style.display = 'none' }
+      } catch(e) {}
+    }
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); document.getElementById('overlay').classList.toggle('show') }
+    function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('show') }
+
+    function showToast(text, type='success') {
+      const t = document.createElement('div'); t.className = `toast ${type}`
+      t.innerHTML = `<span>${type==='success'?'✓':'✕'}</span> ${text}`
+      document.body.appendChild(t)
+      setTimeout(() => { t.style.animation = 'fadeOut .3s ease forwards'; setTimeout(() => t.remove(), 300) }, 2500)
+    }
+
+    // ─── State ───────────────────────────────────────────
+    let prestations = []
+
+    // ─── Init ────────────────────────────────────────────
+    async function init() {
+      await loadPrestations()
+    }
+
+    async function loadPrestations() {
+      try {
+        const res = await fetch(API + '/api/prestations/tous', { credentials: 'include' })
+        if (!res.ok) throw new Error('Erreur serveur')
+        prestations = await res.json()
+        renderList()
+      } catch(e) {
+        document.getElementById('presta-list').innerHTML = '<div class="loading">Impossible de charger les prestations.</div>'
+      }
+    }
+
+    function renderList() {
+      const actifs = prestations.filter(p => p.actif).length
+      document.getElementById('page-sub').textContent = `${prestations.length} forfait${prestations.length > 1 ? 's' : ''} — ${actifs} actif${actifs > 1 ? 's' : ''}`
+
+      if (!prestations.length) {
+        document.getElementById('presta-list').innerHTML = '<div class="loading">Aucune prestation configurée.</div>'
+        return
+      }
+
+      document.getElementById('presta-list').innerHTML = prestations.map(p => renderCard(p)).join('')
+    }
+
+    function renderCard(p) {
+      const dotColor = p.actif ? '#4ade80' : '#6b6b6b'
+      const cardClass = ['presta-card', !p.actif ? 'inactive' : '', p.populaire ? 'popular' : ''].filter(Boolean).join(' ')
+      const details = Array.isArray(p.details) ? p.details : []
+      const toggleLabel = p.actif ? 'Désactiver' : 'Activer'
+
+      return `
+        <div class="${cardClass}" id="card-${p.id}">
+          <div class="presta-left">
+            <div class="presta-header">
+              <span class="presta-name">${escHtml(p.titre)}</span>
+              ${p.badge ? `<span class="presta-badge">${escHtml(p.badge)}</span>` : ''}
+              <span class="presta-status-dot" style="background:${dotColor}" title="${p.actif ? 'Actif' : 'Inactif'}"></span>
+            </div>
+            <div class="presta-prix">${escHtml(p.prix)}</div>
+            ${p.sousTitre ? `<div class="presta-sous">${escHtml(p.sousTitre)}</div>` : ''}
+            ${details.length ? `<ul class="presta-details">${details.map(d => `<li>${escHtml(d)}</li>`).join('')}</ul>` : ''}
+          </div>
+          <div class="presta-actions">
+            <button class="btn-outline-sm" onclick="openModal('${p.id}')">Modifier</button>
+            <button class="btn-outline-sm" onclick="toggleStatut('${p.id}')" id="btn-toggle-${p.id}">${toggleLabel}</button>
+          </div>
+        </div>
+      `
+    }
+
+    // ─── Toggle statut ───────────────────────────────────
+    async function toggleStatut(id) {
+      const btn = document.getElementById(`btn-toggle-${id}`)
+      if (btn) btn.disabled = true
+      try {
+        const res = await fetch(`${API}/api/prestations/${id}/statut`, {
+          method: 'PATCH',
+          credentials: 'include'
+        })
+        if (!res.ok) throw new Error()
+        const updated = await res.json()
+        const idx = prestations.findIndex(p => p.id === id)
+        if (idx !== -1) prestations[idx] = updated
+        const cardEl = document.getElementById(`card-${id}`)
+        if (cardEl) cardEl.outerHTML = renderCard(updated)
+        showToast(`Prestation ${updated.actif ? 'activée' : 'désactivée'}`)
+        // update subtitle
+        const actifs = prestations.filter(p => p.actif).length
+        document.getElementById('page-sub').textContent = `${prestations.length} forfait${prestations.length > 1 ? 's' : ''} — ${actifs} actif${actifs > 1 ? 's' : ''}`
+      } catch(e) {
+        showToast('Erreur lors de la mise à jour', 'error')
+        if (btn) btn.disabled = false
+      }
+    }
+
+    // ─── Modal ───────────────────────────────────────────
+    function openModal(id) {
+      const p = prestations.find(p => p.id === id)
+      if (!p) return
+      document.getElementById('edit-id').value = p.id
+      document.getElementById('edit-titre').value = p.titre || ''
+      document.getElementById('edit-prix').value = p.prix || ''
+      document.getElementById('edit-sous-titre').value = p.sousTitre || ''
+      document.getElementById('edit-badge').value = p.badge || ''
+      document.getElementById('edit-details').value = Array.isArray(p.details) ? p.details.join('\n') : ''
+      document.getElementById('edit-populaire').checked = !!p.populaire
+      document.getElementById('modal-edit').classList.add('open')
+    }
+
+    function closeModal() {
+      document.getElementById('modal-edit').classList.remove('open')
+    }
+
+    async function savePrestation(e) {
+      e.preventDefault()
+      const id = document.getElementById('edit-id').value
+      const rawDetails = document.getElementById('edit-details').value
+      const details = rawDetails.split('\n').map(l => l.trim()).filter(l => l.length > 0)
+
+      const body = {
+        titre: document.getElementById('edit-titre').value.trim(),
+        prix: document.getElementById('edit-prix').value.trim(),
+        sousTitre: document.getElementById('edit-sous-titre').value.trim(),
+        badge: document.getElementById('edit-badge').value.trim(),
+        details,
+        populaire: document.getElementById('edit-populaire').checked
+      }
+
+      try {
+        const res = await fetch(`${API}/api/prestations/${id}`, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        })
+        if (!res.ok) throw new Error()
+        const updated = await res.json()
+        const idx = prestations.findIndex(p => p.id === id)
+        if (idx !== -1) prestations[idx] = updated
+        const cardEl = document.getElementById(`card-${id}`)
+        if (cardEl) cardEl.outerHTML = renderCard(updated)
+        closeModal()
+        showToast('Prestation mise à jour')
+      } catch(e) {
+        showToast('Erreur lors de la sauvegarde', 'error')
+      }
+    }
+
+    // ─── Fermer modal en cliquant dehors ─────────────────
+    document.getElementById('modal-edit').addEventListener('click', function(e) {
+      if (e.target === this) closeModal()
+    })
+
+    // ─── Helpers ─────────────────────────────────────────
+    function escHtml(str) {
+      if (!str) return ''
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')
+    }
+
+    // ─── Boot ────────────────────────────────────────────
+    checkSession().then(() => { loadBadges(); init() })
+  </script>
+</body>
+</html>

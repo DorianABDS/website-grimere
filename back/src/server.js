@@ -66,7 +66,7 @@ app.use('/api/stats',       statsRoutes)
 app.get('/api/health', (_req, res) => {
   res.json({
     status:    'OK',
-    message:   'Serveur Cédric Grimere Photographe opérationnel',
+    message:   `Serveur ${process.env.PHOTOGRAPHE_NOM || 'Photographe'} opérationnel`,
     timestamp: new Date().toISOString(),
     env:       process.env.NODE_ENV,
   })

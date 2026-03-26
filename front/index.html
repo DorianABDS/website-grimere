@@ -3,10 +3,11 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Léa Fontaine — Photographe</title>
+<title>Photographe</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="config.js"></script>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 :root{--noir:#0d0d0d;--charbon:#1a1a1a;--ardoise:#2c2c2c;--cendre:#6b6b6b;--ivoire:#f5f0e8;--or:#c9a84c;--or-pale:#e8d5a3}
@@ -119,6 +120,25 @@ body{background:var(--noir);color:var(--ivoire);font-family:'DM Sans',sans-serif
 .lbl{display:block;color:rgba(245,240,232,.3);font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;margin-bottom:.5rem}
 select.inp option{background:var(--charbon);color:var(--ivoire)}
 select.inp optgroup{background:var(--ardoise);color:var(--or);font-style:normal}
+.modal-avis-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:500;align-items:center;justify-content:center;padding:1rem}
+.modal-avis-bg.open{display:flex}
+.modal-avis{background:#1a1a1a;border:1px solid #2c2c2c;padding:2.5rem;width:100%;max-width:480px;position:relative}
+.modal-avis::before,.modal-avis::after{content:'';position:absolute;width:20px;height:20px}
+.modal-avis::before{top:-1px;left:-1px;border-top:1px solid #c9a84c;border-left:1px solid #c9a84c}
+.modal-avis::after{bottom:-1px;right:-1px;border-bottom:1px solid #c9a84c;border-right:1px solid #c9a84c}
+.modal-avis-title{font-family:'Cormorant Garamond',serif;font-size:1.75rem;font-weight:300;color:#f5f0e8;margin-bottom:.5rem}
+.modal-avis-sub{color:rgba(245,240,232,.35);font-size:.78rem;margin-bottom:2rem}
+.modal-avis-close{position:absolute;top:1rem;right:1rem;background:none;border:none;color:rgba(245,240,232,.3);font-size:1.1rem;cursor:pointer;transition:color .2s}
+.modal-avis-close:hover{color:#f5f0e8}
+.modal-field{margin-bottom:1.25rem}
+.modal-label{display:block;color:rgba(245,240,232,.4);font-size:.62rem;letter-spacing:.25em;text-transform:uppercase;margin-bottom:.45rem}
+.modal-input{width:100%;background:#0d0d0d;border:1px solid #2c2c2c;color:#f5f0e8;padding:.7rem .9rem;font-size:.88rem;font-family:'DM Sans',sans-serif;font-weight:300;outline:none;transition:border-color .2s}
+.modal-input:focus{border-color:#c9a84c}
+.stars-input{display:flex;gap:.4rem;margin-top:.2rem}
+.star-btn{background:none;border:none;font-size:1.5rem;color:rgba(201,168,76,.25);cursor:pointer;transition:color .15s;padding:0;line-height:1}
+.star-btn.lit{color:#c9a84c}
+.modal-avis-confirm{display:none;text-align:center;padding:2rem 0}
+.modal-avis-actions{display:flex;justify-content:flex-end;gap:.75rem;margin-top:1.5rem}
 </style>
 </head>
 <body>
@@ -152,7 +172,7 @@ select.inp optgroup{background:var(--ardoise);color:var(--or);font-style:normal}
 
 <!-- ═══ HERO ══════════════════════════════════════════════════════════════ -->
 <section id="hero">
-  <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80" alt="Paysage photographié par Léa Fontaine" loading="eager"
+  <img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&q=80" alt="Photographie de paysage" loading="eager"
     style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center"/>
   <div style="position:absolute;inset:0;background:linear-gradient(to top,#0d0d0d 0%,rgba(13,13,13,.65) 50%,rgba(13,13,13,.15) 100%)"></div>
   <div style="position:absolute;left:0;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,transparent,rgba(201,168,76,.4),transparent)"></div>
@@ -164,7 +184,7 @@ select.inp optgroup{background:var(--ardoise);color:var(--or);font-style:normal}
       d'être éternel.
     </h1>
     <p class="body-sm afu" style="max-width:420px;margin-bottom:2.5rem;animation-delay:.4s">
-      Je capture l'émotion brute, la lumière fugace, les fragments de vie qui font une histoire. Basée à Marseille, disponible partout.
+      Je capture l'émotion brute, la lumière fugace, les fragments de vie qui font une histoire. Basée à <span id="cfg-ville-hero"></span>, disponible partout.
     </p>
     <div class="afu" style="display:flex;gap:1rem;flex-wrap:wrap;animation-delay:.6s">
       <button class="btn-gold" onclick="goTo('#contact')">Réserver une séance <span>→</span></button>
@@ -474,6 +494,7 @@ select.inp optgroup{background:var(--ardoise);color:var(--or);font-style:normal}
     <div class="reveal" style="margin-bottom:4rem">
       <span class="tag">Témoignages</span>
       <h2 class="h2xl">Ce qu'ils<br><em style="color:rgba(245,240,232,.4);font-style:normal">en disent.</em></h2>
+      <button onclick="openModalAvis()" style="margin-top:1.5rem;background:none;border:1px solid #c9a84c;color:#c9a84c;padding:.6rem 1.4rem;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s" onmouseover="this.style.background='rgba(201,168,76,.07)'" onmouseout="this.style.background='none'">Laisser un avis →</button>
     </div>
     <div class="reveal grid-av">
       <div class="avis-card">
@@ -539,21 +560,21 @@ select.inp optgroup{background:var(--ardoise);color:var(--or);font-style:normal}
             <span style="color:var(--or);flex-shrink:0">✦</span>
             <div>
               <div style="color:rgba(245,240,232,.3);font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:.3rem">Email</div>
-              <a href="/cdn-cgi/l/email-protection#a9cacccddbc0cacedbc0c4ccdbcce9c1c6ddc4c8c0c587cac6c4" style="color:var(--ivoire);text-decoration:none;font-size:.9rem;transition:color .3s" onmouseover="this.style.color='var(--or)'" onmouseout="this.style.color='var(--ivoire)'"><span class="__cf_email__" data-cfemail="22414746504b4145504b4f475047624a4d564f434b4e0c414d4f">[email&#160;protected]</span></a>
+              <a id="cfg-email" href="#" style="color:var(--ivoire);text-decoration:none;font-size:.9rem;transition:color .3s" onmouseover="this.style.color='var(--or)'" onmouseout="this.style.color='var(--ivoire)'"></a>
             </div>
           </div>
           <div style="display:flex;gap:1rem">
             <span style="color:var(--or);flex-shrink:0">✦</span>
             <div>
               <div style="color:rgba(245,240,232,.3);font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:.3rem">Zone d'intervention</div>
-              <span style="color:var(--ivoire);font-size:.9rem">Marseille &amp; Bouches-du-Rhône</span>
+              <span id="cfg-ville-contact" style="color:var(--ivoire);font-size:.9rem"></span>
             </div>
           </div>
           <div style="display:flex;gap:1rem">
             <span style="color:var(--or);flex-shrink:0">✦</span>
             <div>
               <div style="color:rgba(245,240,232,.3);font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:.3rem">Instagram</div>
-              <a href="https://instagram.com/cedric_grimere" target="_blank" rel="noopener noreferrer" style="color:var(--ivoire);text-decoration:none;font-size:.9rem;transition:color .3s" onmouseover="this.style.color='var(--or)'" onmouseout="this.style.color='var(--ivoire)'">@cedric_grimere ↗</a>
+              <a id="cfg-insta" href="#" target="_blank" rel="noopener noreferrer" style="color:var(--ivoire);text-decoration:none;font-size:.9rem;transition:color .3s" onmouseover="this.style.color='var(--or)'" onmouseout="this.style.color='var(--ivoire)'"></a>
             </div>
           </div>
         </div>
@@ -611,9 +632,9 @@ select.inp optgroup{background:var(--ardoise);color:var(--or);font-style:normal}
 <!-- ═══ FOOTER ═════════════════════════════════════════════════════════════ -->
 <footer style="background:var(--noir);border-top:1px solid rgba(44,44,44,.5)">
   <div style="max-width:1200px;margin:0 auto;padding:2.5rem 2rem;display:flex;flex-direction:column;align-items:center;gap:1.5rem;text-align:center">
-    <button onclick="window.scrollTo({top:0,behavior:'smooth'})" style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:rgba(245,240,232,.35);letter-spacing:.12em;background:none;border:none;cursor:pointer;transition:color .3s" onmouseover="this.style.color='var(--or)'" onmouseout="this.style.color='rgba(245,240,232,.35)'">LF<span style="color:var(--or)">.</span></button>
-    <p style="color:rgba(245,240,232,.2);font-size:.72rem;letter-spacing:.08em">© 2025 Léa Fontaine · Tous droits réservés · Lyon</p>
-    <a href="https://instagram.com/cedric_grimere" target="_blank" rel="noopener noreferrer" style="color:rgba(245,240,232,.3);font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;transition:color .3s" onmouseover="this.style.color='var(--or)'" onmouseout="this.style.color='rgba(245,240,232,.3)'">Instagram ↗</a>
+    <button id="cfg-footer-logo" onclick="window.scrollTo({top:0,behavior:'smooth'})" style="font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:rgba(245,240,232,.35);letter-spacing:.12em;background:none;border:none;cursor:pointer;transition:color .3s" onmouseover="this.style.color='var(--or)'" onmouseout="this.style.color='rgba(245,240,232,.35)'"><span style="color:var(--or)">.</span></button>
+    <p id="cfg-footer-copy" style="color:rgba(245,240,232,.2);font-size:.72rem;letter-spacing:.08em"></p>
+    <a id="cfg-footer-insta" href="#" target="_blank" rel="noopener noreferrer" style="color:rgba(245,240,232,.3);font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;transition:color .3s" onmouseover="this.style.color='var(--or)'" onmouseout="this.style.color='rgba(245,240,232,.3)'">Instagram ↗</a>
   </div>
 </footer>
 
@@ -637,10 +658,6 @@ const obs=new IntersectionObserver(entries=>{
   entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}});
 },{threshold:0.1});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
-
-// ── CONFIG API ───────────────────────────────────────────────────────────
-// 🔧 Remplacer par l'URL Railway une fois déployé
-const API_URL = 'https://cedric-grimere-back.onrender.com' // Remplacer par ton URL Render
 
 // ── Galerie : données depuis l'API, fallback sur mock si pas encore déployé
 let themes = {}
@@ -707,8 +724,54 @@ const THEMES_MOCK={
 }
 
 // ── CONFIG API ───────────────────────────────────────────────────────────
-// 🔧 Remplacer par l'URL Railway une fois déployé
-const API_URL = 'https://cedric-grimere-back.onrender.com' // Remplacer par ton URL Render
+const API_URL = (window.SITE_CONFIG && window.SITE_CONFIG.API_URL) || 'http://localhost:5000'
+
+// ── Modal Avis ────────────────────────────────────────────────────────────
+let noteSelectionnee = 0
+function openModalAvis() {
+  document.getElementById('modalAvisBg').classList.add('open')
+  document.body.style.overflow = 'hidden'
+}
+function closeModalAvis() {
+  document.getElementById('modalAvisBg').classList.remove('open')
+  document.body.style.overflow = ''
+  document.getElementById('avis-nom').value = ''
+  document.getElementById('avis-prestation').value = ''
+  document.getElementById('avis-commentaire').value = ''
+  noteSelectionnee = 0
+  document.querySelectorAll('.star-btn').forEach(s => s.classList.remove('lit'))
+  document.getElementById('modalAvisForm').style.display = ''
+  document.getElementById('modalAvisConfirm').style.display = 'none'
+}
+function setNote(n) {
+  noteSelectionnee = n
+  document.querySelectorAll('.star-btn').forEach(s => s.classList.toggle('lit', parseInt(s.dataset.val) <= n))
+}
+async function submitAvis(btn) {
+  const nom = document.getElementById('avis-nom').value.trim()
+  const prestation = document.getElementById('avis-prestation').value
+  const commentaire = document.getElementById('avis-commentaire').value.trim()
+  if (!nom || !prestation || !noteSelectionnee || !commentaire) {
+    alert('Veuillez remplir tous les champs et sélectionner une note.')
+    return
+  }
+  btn.textContent = 'Envoi...'
+  btn.disabled = true
+  try {
+    const res = await fetch(API_URL + '/api/avis', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ nom, prestation, note: noteSelectionnee, commentaire })
+    })
+    if (!res.ok) throw new Error()
+    document.getElementById('modalAvisForm').style.display = 'none'
+    document.getElementById('modalAvisConfirm').style.display = 'block'
+  } catch(e) {
+    alert('Erreur lors de l\'envoi. Veuillez réessayer.')
+    btn.textContent = 'Envoyer →'
+    btn.disabled = false
+  }
+}
 
 // ── Chargement initial depuis l'API ──────────────────────────────────────
 async function initSite(){
@@ -851,7 +914,7 @@ async function submitForm(){
     document.getElementById('form-wrap').style.display='none';
     document.getElementById('form-confirm').style.display='flex';
   } catch(e){
-    alert("Erreur lors de l'envoi. Contactez directement : cedricgrimere@hotmail.com");
+    alert("Erreur lors de l'envoi. Contactez directement : " + (window.SITE_CONFIG && window.SITE_CONFIG.EMAIL || ''));
     btn.textContent='Envoyer le message →'; btn.disabled=false;
   }
 }
@@ -862,6 +925,90 @@ function resetForm(){
   document.getElementById('form-wrap').style.display='block';
 }
 
+// ── Initialisation depuis SITE_CONFIG (variables d'environnement frontend) ─
+;(function(){
+  const C = window.SITE_CONFIG || {}
+  const IG_HANDLE = C.INSTAGRAM ? '@' + C.INSTAGRAM.replace(/.*instagram\.com\//,'') + ' ↗' : ''
+
+  if(C.NOM) document.title = C.NOM + ' — Photographe'
+
+  const vh = document.getElementById('cfg-ville-hero')
+  if(vh) vh.textContent = C.VILLE || ''
+
+  const vc = document.getElementById('cfg-ville-contact')
+  if(vc) vc.textContent = C.VILLE || ''
+
+  const em = document.getElementById('cfg-email')
+  if(em && C.EMAIL){ em.href = 'mailto:' + C.EMAIL; em.textContent = C.EMAIL }
+
+  const ig = document.getElementById('cfg-insta')
+  if(ig && C.INSTAGRAM){ ig.href = C.INSTAGRAM; ig.textContent = IG_HANDLE }
+
+  const logo = document.getElementById('cfg-footer-logo')
+  if(logo && C.NOM){
+    const initiales = C.NOM.trim().split(/\s+/).map(n=>n[0]).join('').toUpperCase().slice(0,2)
+    logo.innerHTML = initiales + '<span style="color:var(--or)">.</span>'
+  }
+
+  const copy = document.getElementById('cfg-footer-copy')
+  if(copy) copy.textContent = '© ' + new Date().getFullYear() + ' ' + (C.NOM||'') + ' · Tous droits réservés · ' + (C.VILLE||'')
+
+  const fi = document.getElementById('cfg-footer-insta')
+  if(fi && C.INSTAGRAM) fi.href = C.INSTAGRAM
+})()
+
 </script>
+
+<div class="modal-avis-bg" id="modalAvisBg" onclick="if(event.target===this)closeModalAvis()">
+  <div class="modal-avis">
+    <button class="modal-avis-close" onclick="closeModalAvis()">✕</button>
+    <div id="modalAvisForm">
+      <h3 class="modal-avis-title">Laisser un avis</h3>
+      <p class="modal-avis-sub">Partagez votre expérience · visible après modération</p>
+      <div class="modal-field">
+        <label class="modal-label">Votre nom</label>
+        <input id="avis-nom" class="modal-input" type="text" placeholder="Prénom Nom"/>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Prestation</label>
+        <select id="avis-prestation" class="modal-input">
+          <option value="">Choisir une prestation</option>
+          <option value="Naissance · Grossesse">Naissance · Grossesse</option>
+          <option value="Animalier">Animalier</option>
+          <option value="Culinaire">Culinaire</option>
+          <option value="Baby Shower · Anniversaire">Baby Shower · Anniversaire</option>
+          <option value="Événement · Entreprise">Événement · Entreprise</option>
+          <option value="Baptême">Baptême</option>
+          <option value="Mariage">Mariage</option>
+          <option value="Mariage Complet">Mariage Complet</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Note</label>
+        <div class="stars-input" id="starsInput">
+          <button type="button" class="star-btn" data-val="1" onclick="setNote(1)">★</button>
+          <button type="button" class="star-btn" data-val="2" onclick="setNote(2)">★</button>
+          <button type="button" class="star-btn" data-val="3" onclick="setNote(3)">★</button>
+          <button type="button" class="star-btn" data-val="4" onclick="setNote(4)">★</button>
+          <button type="button" class="star-btn" data-val="5" onclick="setNote(5)">★</button>
+        </div>
+      </div>
+      <div class="modal-field">
+        <label class="modal-label">Commentaire</label>
+        <textarea id="avis-commentaire" class="modal-input" rows="4" placeholder="Décrivez votre expérience..."></textarea>
+      </div>
+      <div class="modal-avis-actions">
+        <button onclick="closeModalAvis()" style="background:none;border:1px solid #2c2c2c;color:rgba(245,240,232,.5);padding:.65rem 1.2rem;font-size:.75rem;cursor:pointer;font-family:'DM Sans',sans-serif">Annuler</button>
+        <button onclick="submitAvis(this)" style="background:#c9a84c;color:#0d0d0d;border:none;padding:.65rem 1.4rem;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500">Envoyer →</button>
+      </div>
+    </div>
+    <div class="modal-avis-confirm" id="modalAvisConfirm">
+      <div style="color:#c9a84c;font-size:2rem;margin-bottom:1rem">✦</div>
+      <h3 style="font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:#f5f0e8;margin-bottom:.75rem">Merci pour votre avis !</h3>
+      <p style="color:rgba(245,240,232,.4);font-size:.82rem;line-height:1.7">Votre avis est en cours de modération et sera publié prochainement.</p>
+      <button onclick="closeModalAvis()" style="margin-top:1.5rem;background:none;border:none;color:#c9a84c;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif">Fermer</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
