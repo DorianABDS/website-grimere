@@ -1,9 +1,13 @@
 #!/bin/sh
 set -e
 
-# Appliquer le schéma Prisma
+# Appliquer le schéma Prisma (retry pour laisser le temps à Neon de se réveiller)
 echo "📦 Application du schéma..."
-npx prisma db push --skip-generate
+for i in 1 2 3 4 5; do
+  npx prisma db push --skip-generate && break
+  echo "   Tentative $i échouée, retry dans 5s..."
+  sleep 5
+done
 
 echo "✅ Tables créées"
 
