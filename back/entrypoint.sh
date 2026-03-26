@@ -4,7 +4,7 @@ set -e
 # Appliquer le schéma Prisma (retry pour laisser le temps à Neon de se réveiller)
 echo "📦 Application du schéma..."
 for i in 1 2 3 4 5; do
-  npx prisma db push --skip-generate && break
+  npx prisma db push --skip-generate --accept-data-loss && break
   echo "   Tentative $i échouée, retry dans 5s..."
   sleep 5
 done
