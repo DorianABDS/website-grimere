@@ -6,7 +6,6 @@ if (new URLSearchParams(window.location.search).get('error') === 'acces_refuse')
   const C = window.ADMIN_CONFIG || {}
   const n = document.getElementById('cfg-nom'); if (n) n.textContent = C.NOM || ''
   const v = document.getElementById('cfg-ville'); if (v) v.textContent = C.VILLE || ''
-  document.title = 'Cedric Grimere - Login'
 })()
 
 function handleLogin(e) {
