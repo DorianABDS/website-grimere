@@ -19,7 +19,7 @@ router.get('/couvertures', async (req, res) => {
 })
 
 // PUT /api/galerie/couverture/:theme — changer la photo de couverture
-router.put('/couverture/:theme', upload.single('photo'), async (req, res) => {
+router.put('/couverture/:theme', isAdmin, upload.single('photo'), async (req, res) => {
   try {
     const { theme } = req.params
     const themes = ['mariage','naissance','portrait','animalier','culinaire','evenement','bapteme','babyshower']

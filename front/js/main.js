@@ -18,69 +18,18 @@ const obs=new IntersectionObserver(entries=>{
 },{threshold:0.1});
 document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
 
-// ── Galerie : données depuis l'API, fallback sur mock si pas encore déployé
-let themes = {}
-
-// Données de secours (mock) utilisées tant que l'API n'est pas branchée
-const THEMES_MOCK={
-  mariage:{label:'Mariage',photos:[
-    {src:'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&q=80',alt:'Cérémonie de mariage en plein air'},
-    {src:'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1200&q=80',alt:'Échange des alliances'},
-    {src:'https://images.unsplash.com/photo-1460978812857-470ed1c77af0?w=1200&q=80',alt:'Portrait des mariés'},
-    {src:'https://images.unsplash.com/photo-1529636798458-92182e662485?w=1200&q=80',alt:'Détail robe de mariée'},
-    {src:'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=1200&q=80',alt:'Danse de mariage'},
-    {src:'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1200&q=80',alt:'Bouquet de fleurs'},
-  ]},
-  naissance:{label:'Naissance & Grossesse',photos:[
-    {src:'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=1200&q=80',alt:'Séance naissance nouveau-né'},
-    {src:'https://images.unsplash.com/photo-1519689680058-324335c77eba?w=1200&q=80',alt:'Portrait grossesse en lumière naturelle'},
-    {src:'https://images.unsplash.com/photo-1492725764893-90b379c2b6e7?w=1200&q=80',alt:'Mains bébé nouveau-né'},
-    {src:'https://images.unsplash.com/photo-1544126592-807ade215a0b?w=1200&q=80',alt:'Shooting grossesse en extérieur'},
-    {src:'https://images.unsplash.com/photo-1518708909080-704599b19972?w=1200&q=80',alt:'Portrait famille nouveau-né'},
-  ]},
-  portrait:{label:'Portrait',photos:[
-    {src:'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=1200&q=80',alt:'Portrait femme lumière naturelle'},
-    {src:'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=1200&q=80',alt:'Portrait homme en studio'},
-    {src:'https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=1200&q=80',alt:'Portrait artistique'},
-    {src:'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=1200&q=80',alt:'Portrait mode éditorial'},
-    {src:'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1200&q=80',alt:'Portrait professionnel'},
-  ]},
-  animalier:{label:'Animalier',photos:[
-    {src:'https://images.unsplash.com/photo-1587300003388-59208cc962cb?w=1200&q=80',alt:'Portrait chien golden retriever'},
-    {src:'https://images.unsplash.com/photo-1548199973-03cce0bbc87b?w=1200&q=80',alt:'Chiens en balade'},
-    {src:'https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?w=1200&q=80',alt:'Portrait chat curieux'},
-    {src:'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=1200&q=80',alt:'Chat en extérieur'},
-    {src:'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&q=80',alt:'Chien portrait artistique'},
-  ]},
-  culinaire:{label:'Culinaire',photos:[
-    {src:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1200&q=80',alt:'Plat gastronomique'},
-    {src:'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=1200&q=80',alt:'Table dressée restaurant'},
-    {src:'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=1200&q=80',alt:'Pizza artisanale'},
-    {src:'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?w=1200&q=80',alt:'Petit-déjeuner stylisé'},
-    {src:'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?w=1200&q=80',alt:'Légumes frais colorés'},
-  ]},
-  evenement:{label:'Événement & Entreprise',photos:[
-    {src:'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=1200&q=80',alt:'Conférence entreprise'},
-    {src:'https://images.unsplash.com/photo-1511578314322-379afb476865?w=1200&q=80',alt:'Événement corporate'},
-    {src:'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?w=1200&q=80',alt:'Compétition sportive'},
-    {src:'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200&q=80',alt:'Athlète en action'},
-    {src:'https://images.unsplash.com/photo-1475721027785-f74eccf877e2?w=1200&q=80',alt:'Scène événement festif'},
-  ]},
-  bapteme:{label:'Baptême & Célébration',photos:[
-    {src:'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=1200&q=80',alt:'Cérémonie de baptême'},
-    {src:'https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1200&q=80',alt:'Famille lors d une célébration'},
-    {src:'https://images.unsplash.com/photo-1529636798458-92182e662485?w=1200&q=80',alt:'Décoration de fête'},
-    {src:'https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&q=80',alt:'Cocktail familial'},
-    {src:'https://images.unsplash.com/photo-1460978812857-470ed1c77af0?w=1200&q=80',alt:'Portrait famille célébration'},
-  ]},
-  babyshower:{label:'Baby Shower & Anniversaire',photos:[
-    {src:'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=1200&q=80',alt:'Décoration baby shower'},
-    {src:'https://images.unsplash.com/photo-1530103862676-de8c9debad1d?w=1200&q=80',alt:'Gâteau anniversaire'},
-    {src:'https://images.unsplash.com/photo-1464349153735-7db50ed83c84?w=1200&q=80',alt:'Ballons décoration fête'},
-    {src:'https://images.unsplash.com/photo-1558618047-f4e90f6ceb73?w=1200&q=80',alt:'Ambiance anniversaire'},
-    {src:'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=1200&q=80',alt:'Moments joyeux en famille'},
-  ]}
+// ── Galerie : uniquement les photos de la base de données ────────────────
+const THEME_LABELS = {
+  mariage:    'Mariage',
+  naissance:  'Naissance & Grossesse',
+  portrait:   'Portrait',
+  animalier:  'Animalier',
+  culinaire:  'Culinaire',
+  evenement:  'Événement & Entreprise',
+  bapteme:    'Baptême & Célébration',
+  babyshower: 'Baby Shower & Anniversaire',
 }
+let themes = {}
 
 // ── CONFIG API ───────────────────────────────────────────────────────────
 const API_URL = (window.SITE_CONFIG && window.SITE_CONFIG.API_URL) || 'http://localhost:5000'
@@ -138,37 +87,32 @@ async function initSite(){
 }
 
 async function chargerGalerie(){
-  // 1. Charger les couvertures par thème
+  // 1. Couvertures → mettre à jour les images des cards
   try {
     const resCouv = await fetch(API_URL+'/api/galerie/couvertures')
     if(resCouv.ok){
       const couvertures = await resCouv.json()
       for(const [key, couv] of Object.entries(couvertures)){
+        if(!couv || !couv.url) continue
         const card = document.getElementById('tc-'+key)
-        if(card){
-          const img = card.querySelector('img')
-          if(img && couv && couv.url){
-            img.src = couv.url
-            img.alt = couv.alt || key
-          }
-        }
+        if(card){ const img=card.querySelector('img'); if(img){ img.src=couv.url; img.alt=couv.alt||key } }
       }
     }
-  } catch(e){ /* fallback silencieux : les images statiques de l'HTML restent */ }
+  } catch(e){}
 
-  // 2. Charger les photos réelles et mettre à jour themes + compteurs
+  // 2. Photos DB → remplacer entièrement le contenu de themes
   try {
     const res = await fetch(API_URL+'/api/galerie')
     if(!res.ok) throw new Error()
     const data = await res.json()
-    for(const [key, photos] of Object.entries(data)){
-      if(THEMES_MOCK[key] && photos.length > 0){
-        THEMES_MOCK[key].photos = photos.map(p=>({src:p.url,alt:p.alt||key}))
-      }
+    themes = {}
+    for(const key of Object.keys(THEME_LABELS)){
+      const photos = data[key] || []
+      themes[key] = { label: THEME_LABELS[key], photos: photos.map(p=>({src:p.url,alt:p.alt||key})) }
       const card = document.getElementById('tc-'+key)
       if(card){ const s=card.querySelector('small'); if(s) s.textContent=photos.length+' photo'+(photos.length>1?'s':'') }
     }
-  } catch(e){ console.log('Galerie : données mock utilisées') }
+  } catch(e){ console.log('Galerie : erreur chargement') }
 }
 
 async function chargerPrestations(){
@@ -215,24 +159,27 @@ async function chargerAvis(){
 initSite()
 
 let curTheme=null,curIdx=0;
-themes=THEMES_MOCK;
 function openTheme(id){
   if(curTheme===id){closeTheme();return;}
   curTheme=id;
   document.querySelectorAll('.theme-card').forEach(c=>c.classList.remove('active'));
   document.getElementById('tc-'+id).classList.add('active');
   const t=themes[id];
-  if(!t) return;
-  document.getElementById('grid-title').textContent=t.label;
+  const label=THEME_LABELS[id]||id;
+  document.getElementById('grid-title').textContent=label;
   const g=document.getElementById('photo-grid');
   g.innerHTML='';
-  t.photos.forEach((p,i)=>{
-    const b=document.createElement('button');
-    b.onclick=()=>openLB(i);
-    const img=document.createElement('img');
-    img.src=p.src;img.alt=p.alt;img.loading='lazy';
-    b.appendChild(img);g.appendChild(b);
-  });
+  if(!t||t.photos.length===0){
+    g.innerHTML='<p style="color:var(--cendre);font-style:italic;padding:2rem 0">Aucune photo dans cette catégorie pour le moment.</p>';
+  } else {
+    t.photos.forEach((p,i)=>{
+      const b=document.createElement('button');
+      b.onclick=()=>openLB(i);
+      const img=document.createElement('img');
+      img.src=p.src;img.alt=p.alt;img.loading='lazy';
+      b.appendChild(img);g.appendChild(b);
+    });
+  }
   const s=document.getElementById('photo-section');
   s.style.display='block';
   setTimeout(()=>s.scrollIntoView({behavior:'smooth',block:'nearest'}),100);

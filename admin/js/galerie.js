@@ -69,22 +69,35 @@ function renderGrid() {
 
   // Section couverture (au-dessus de la grille)
   const couv = couverturesData[activeTheme]
-  const couvertureUrl = couv && couv.url ? couv.url : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="80"><rect width="120" height="80" fill="%23374151"/><text x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%236b7280" font-size="11">Aucune</text></svg>'
+  const couvertureUrl = couv && couv.url ? couv.url : ''
   const themeLabel = THEMES.find(t => t.key === activeTheme)?.label || activeTheme
   const coverSection = document.createElement('div')
   coverSection.style.cssText = 'grid-column:1/-1;margin-bottom:1.5rem'
-  coverSection.innerHTML = `<div class="cover-section" style="display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--ardoise);border-radius:8px;">
-  <img id="cover-preview" src="${couvertureUrl}" alt="Couverture ${themeLabel}"
-       style="width:120px;height:80px;object-fit:cover;border-radius:6px;border:2px solid var(--or)">
-  <div>
-    <div style="font-size:.85rem;color:var(--or);margin-bottom:.5rem">Photo de couverture</div>
-    <div style="font-size:.75rem;color:rgba(245,240,232,.5);margin-bottom:.75rem">Visible sur le site public comme miniature du thème</div>
-    <label class="btn-outline" style="cursor:pointer;font-size:.8rem;padding:.4rem .9rem">
-      Changer la couverture
-      <input type="file" accept="image/*" style="display:none" onchange="changerCouverture('${activeTheme}', this)">
-    </label>
-  </div>
-</div>`
+  const coverDiv = document.createElement('div')
+  coverDiv.className = 'cover-section'
+  coverDiv.style.cssText = 'display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--ardoise);border-radius:8px'
+  const coverImg = document.createElement('img')
+  coverImg.id = 'cover-preview'
+  coverImg.src = couvertureUrl
+  coverImg.alt = 'Couverture ' + themeLabel
+  coverImg.style.cssText = 'width:120px;height:80px;object-fit:cover;border-radius:6px;border:2px solid var(--or)'
+  const coverInfo = document.createElement('div')
+  const coverLabel = document.createElement('input')
+  coverLabel.type = 'file'
+  coverLabel.accept = 'image/*'
+  coverLabel.style.display = 'none'
+  coverLabel.onchange = function() { changerCouverture(activeTheme, this) }
+  const coverBtn = document.createElement('label')
+  coverBtn.className = 'btn-outline'
+  coverBtn.style.cssText = 'cursor:pointer;font-size:.8rem;padding:.4rem .9rem'
+  coverBtn.textContent = 'Changer la couverture'
+  coverBtn.appendChild(coverLabel)
+  coverInfo.innerHTML = '<div style="font-size:.85rem;color:var(--or);margin-bottom:.5rem">Photo de couverture</div><div style="font-size:.75rem;color:rgba(245,240,232,.5);margin-bottom:.75rem">Visible sur le site public comme miniature du thème</div>'
+  coverInfo.appendChild(coverBtn)
+  coverDiv.appendChild(coverImg)
+  coverDiv.appendChild(coverInfo)
+  coverSection.innerHTML = ''
+  coverSection.appendChild(coverDiv)
   grid.appendChild(coverSection)
 
   if (photos.length === 0) {
