@@ -6,7 +6,7 @@ const fs     = require('fs')
 // ─── Stockage en mémoire avant conversion ─────────────────────────────────
 const upload = multer({
   storage: multer.memoryStorage(),
-  limits:  { fileSize: 20 * 1024 * 1024 }, // 20 MB max
+  limits:  { fileSize: 50 * 1024 * 1024 }, // 50 MB max
   fileFilter: (_req, file, cb) => {
     const allowed = ['image/jpeg','image/png','image/webp','image/heic','image/tiff']
     if (allowed.includes(file.mimetype)) cb(null, true)
