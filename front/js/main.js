@@ -98,6 +98,18 @@ async function initSite(){
   await Promise.all([chargerGalerie(), chargerPrestations(), chargerAvis(), chargerHero()])
 }
 
+async function initAvecRetry(){
+  const MAX = 5
+  for(let i = 0; i < MAX; i++){
+    try {
+      const res = await fetch(API_URL+'/api/prestations', { signal: AbortSignal.timeout(8000) })
+      if(res.ok){ await initSite(); return }
+    } catch(e){}
+    if(i < MAX - 1) await new Promise(r => setTimeout(r, 3000))
+  }
+  await initSite()
+}
+
 async function chargerGalerie(){
   // 1. Couvertures → mettre à jour les images des cards
   try {
@@ -167,8 +179,8 @@ async function chargerAvis(){
   } catch(e){ console.log('Avis : données HTML statiques conservées') }
 }
 
-// Lancer au démarrage
-initSite()
+// Lancer au démarrage avec retry si le backend est en cold start
+initAvecRetry()
 
 let curTheme=null,curIdx=0;
 function openTheme(id){
