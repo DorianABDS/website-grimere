@@ -11,7 +11,7 @@ done
 
 echo "✅ Tables créées"
 
-# Seed uniquement si la table Prestation est vide
+# Seed prestations si vide
 COUNT=$(node -e "
 const { PrismaClient } = require('@prisma/client')
 const p = new PrismaClient()
@@ -24,6 +24,21 @@ if [ "$COUNT" = "0" ]; then
   echo "✅ Seed terminé"
 else
   echo "✅ Base déjà peuplée ($COUNT prestations)"
+fi
+
+# Seed couvertures si vide (toujours vérifié indépendamment)
+COUNT_COUV=$(node -e "
+const { PrismaClient } = require('@prisma/client')
+const p = new PrismaClient()
+p.themeCouverture.count().then(n => { console.log(n); p.\$disconnect() }).catch(() => { console.log('0'); process.exit(0) })
+" 2>/dev/null || echo "0")
+
+if [ "$COUNT_COUV" = "0" ]; then
+  echo "🖼️  Insertion des couvertures placeholder..."
+  node src/seedCouvertures.js
+  echo "✅ Couvertures insérées"
+else
+  echo "✅ Couvertures déjà présentes ($COUNT_COUV thèmes)"
 fi
 
 echo "🚀 Démarrage du serveur..."
