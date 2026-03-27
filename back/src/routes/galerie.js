@@ -55,6 +55,26 @@ router.put('/couverture/:theme', isAdmin, upload.single('photo'), async (req, re
   }
 })
 
+// DELETE /api/galerie/couverture/:theme — supprimer la photo de couverture
+router.delete('/couverture/:theme', isAdmin, async (req, res) => {
+  try {
+    const { theme } = req.params
+    const config = await prisma.themeCouverture.findUnique({ where: { theme } })
+    if (config?.publicId) {
+      try { await cloudinary.uploader.destroy(config.publicId) } catch(e) {}
+    }
+    await prisma.themeCouverture.upsert({
+      where: { theme },
+      update: { url: null, publicId: null },
+      create: { theme, url: null, publicId: null }
+    })
+    res.json({ ok: true })
+  } catch(e) {
+    console.error('Erreur suppression couverture:', e)
+    res.status(500).json({ message: 'Erreur suppression couverture.' })
+  }
+})
+
 // ── GET /api/galerie — toutes les photos groupées par thème (public) ──────
 router.get('/', async (req, res) => {
   try {

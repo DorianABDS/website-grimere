@@ -92,8 +92,18 @@ function renderGrid() {
   coverBtn.style.cssText = 'cursor:pointer;font-size:.8rem;padding:.4rem .9rem'
   coverBtn.textContent = 'Changer la couverture'
   coverBtn.appendChild(coverLabel)
+  const coverDelBtn = document.createElement('button')
+  coverDelBtn.className = 'btn-outline danger'
+  coverDelBtn.style.cssText = 'cursor:pointer;font-size:.8rem;padding:.4rem .9rem;margin-left:.5rem'
+  coverDelBtn.textContent = 'Supprimer'
+  coverDelBtn.style.display = couvertureUrl ? 'inline-block' : 'none'
+  coverDelBtn.onclick = () => supprimerCouverture(activeTheme, coverDelBtn)
   coverInfo.innerHTML = '<div style="font-size:.85rem;color:var(--or);margin-bottom:.5rem">Photo de couverture</div><div style="font-size:.75rem;color:rgba(245,240,232,.5);margin-bottom:.75rem">Visible sur le site public comme miniature du thème</div>'
-  coverInfo.appendChild(coverBtn)
+  const coverActions = document.createElement('div')
+  coverActions.style.cssText = 'display:flex;align-items:center;gap:.5rem;flex-wrap:wrap'
+  coverActions.appendChild(coverBtn)
+  coverActions.appendChild(coverDelBtn)
+  coverInfo.appendChild(coverActions)
   coverDiv.appendChild(coverImg)
   coverDiv.appendChild(coverInfo)
   coverSection.innerHTML = ''
@@ -278,6 +288,23 @@ async function changerCouverture(theme, input) {
     if (typeof showToast === 'function') showToast('Couverture mise à jour ✓')
   } catch(e) {
     if (typeof showToast === 'function') showToast('Erreur upload couverture', 'error')
+  }
+}
+
+async function supprimerCouverture(theme, btn) {
+  if (!confirm('Supprimer la photo de couverture de ce thème ?')) return
+  try {
+    const res = await fetch(API + '/api/galerie/couverture/' + theme, {
+      method: 'DELETE', credentials: 'include'
+    })
+    if (!res.ok) throw new Error()
+    couverturesData[theme] = { url: null, alt: theme }
+    const prev = document.getElementById('cover-preview')
+    if (prev) prev.src = ''
+    if (btn) btn.style.display = 'none'
+    if (typeof showToast === 'function') showToast('Couverture supprimée')
+  } catch(e) {
+    if (typeof showToast === 'function') showToast('Erreur suppression couverture', 'error')
   }
 }
 

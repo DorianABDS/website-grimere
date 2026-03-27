@@ -21,7 +21,7 @@ router.post('/', async (req, res) => {
     Promise.all([
       sendAdminNotification({ nom, email, prestation, message }),
       sendClientConfirmation({ nom, email, prestation }),
-    ]).catch(err => console.error('Erreur email:', err))
+    ]).catch(err => console.error('MAIL ERROR:', err.message, '| code:', err.code, '| responseCode:', err.responseCode, '| command:', err.command))
 
     res.status(201).json({ message: 'Message envoyé avec succès.', id: nouveauMessage.id })
   } catch (err) {
