@@ -281,7 +281,7 @@ function resetForm(){
   const C = window.SITE_CONFIG || {}
   const IG_HANDLE = C.INSTAGRAM ? '@' + C.INSTAGRAM.replace(/.*instagram\.com\//,'') + ' ↗' : ''
 
-  if(C.NOM) document.title = C.NOM + ' — Photographe'
+  document.title = 'Cedric Grimere Photographie'
 
   const vh = document.getElementById('cfg-ville-hero')
   if(vh) vh.textContent = C.VILLE || ''
