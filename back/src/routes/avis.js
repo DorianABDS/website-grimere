@@ -89,7 +89,8 @@ router.put('/:id', isAdmin, async (req, res) => {
 // ── DELETE /api/avis/:id — supprimer (admin) ──────────────────────────────
 router.delete('/:id', isAdmin, async (req, res) => {
   try {
-    await prisma.avis.delete({ where: { id: req.params.id } })
+    const count = await prisma.avis.deleteMany({ where: { id: req.params.id } })
+    if (count.count === 0) return res.status(404).json({ message: 'Avis introuvable.' })
     res.json({ message: 'Avis supprimé.' })
   } catch (err) {
     res.status(500).json({ message: 'Erreur serveur.' })
