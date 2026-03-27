@@ -18,7 +18,7 @@ async function checkSession() {
 async function logout() {
   if (!confirm('Se déconnecter ?')) return
   try { await fetch(API + '/api/auth/logout', { method: 'POST', credentials: 'include' }) } catch(e) {}
-  window.location.href = 'login.html'
+  window.location.href = (window.ADMIN_CONFIG && window.ADMIN_CONFIG.SITE_URL) || '../index.html'
 }
 
 async function loadBadges() {
