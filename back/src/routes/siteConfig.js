@@ -2,6 +2,7 @@ const express    = require('express')
 const router     = express.Router()
 const prisma     = require('../config/prisma')
 const cloudinary = require('../config/cloudinary')
+const sharp      = require('sharp')
 const { upload } = require('../middleware/upload')
 const { isAdmin } = require('../middleware/auth')
 
@@ -26,13 +27,19 @@ router.put('/hero', isAdmin, upload.single('photo'), async (req, res) => {
       try { await cloudinary.uploader.destroy(ancienne.valeur) } catch(e) {}
     }
 
+    // Compression Sharp avant upload (max 1920px, WebP 82%)
+    const compressed = await sharp(req.file.buffer)
+      .resize({ width: 1920, withoutEnlargement: true })
+      .webp({ quality: 82 })
+      .toBuffer()
+
     // Upload sur Cloudinary
     const result = await new Promise((resolve, reject) => {
       const stream = cloudinary.uploader.upload_stream(
         { folder: `${process.env.CLOUDINARY_FOLDER}/hero`, resource_type: 'image' },
         (err, result) => err ? reject(err) : resolve(result)
       )
-      stream.end(req.file.buffer)
+      stream.end(compressed)
     })
 
     // Sauvegarder en DB
