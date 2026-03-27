@@ -63,14 +63,8 @@ async function toggleStatut(id) {
   try {
     const res = await fetch(`${API}/api/prestations/${id}/statut`, { method: 'PATCH', credentials: 'include' })
     if (!res.ok) throw new Error()
-    const updated = await res.json()
-    const idx = prestations.findIndex(p => String(p.id) === String(id))
-    if (idx !== -1) prestations[idx] = updated
-    const data = idx !== -1 ? prestations[idx] : { ...updated }
-    replaceCardInDOM(id, renderCard(data))
-    showToast(`Prestation ${data.actif ? 'activée' : 'désactivée'}`)
-    const actifs = prestations.filter(p => p.actif).length
-    document.getElementById('page-sub').textContent = `${prestations.length} forfait${prestations.length > 1 ? 's' : ''} — ${actifs} actif${actifs > 1 ? 's' : ''}`
+    await loadPrestations()
+    showToast('Prestation mise à jour')
   } catch(e) {
     showToast('Erreur lors de la mise à jour', 'error')
     if (btn) btn.disabled = false
@@ -114,11 +108,7 @@ async function savePrestation(e) {
       body: JSON.stringify(body)
     })
     if (!res.ok) throw new Error()
-    const updated = await res.json()
-    const idx = prestations.findIndex(p => String(p.id) === String(id))
-    if (idx !== -1) prestations[idx] = updated
-    const data = idx !== -1 ? prestations[idx] : { ...updated }
-    replaceCardInDOM(id, renderCard(data))
+    await loadPrestations()
     closeModal()
     showToast('Prestation mise à jour')
   } catch(e) { showToast('Erreur lors de la sauvegarde', 'error') }
