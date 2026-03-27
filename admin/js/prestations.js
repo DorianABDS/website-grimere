@@ -63,7 +63,10 @@ async function toggleStatut(id) {
   try {
     const res = await fetch(`${API}/api/prestations/${id}/statut`, { method: 'PATCH', credentials: 'include' })
     if (!res.ok) throw new Error()
-    await loadPrestations()
+    const updated = await res.json()
+    const idx = prestations.findIndex(p => String(p.id) === String(id))
+    if (idx !== -1) prestations[idx] = updated
+    replaceCardInDOM(id, renderCard(updated))
     showToast('Prestation mise à jour')
   } catch(e) {
     showToast('Erreur lors de la mise à jour', 'error')
@@ -108,7 +111,10 @@ async function savePrestation(e) {
       body: JSON.stringify(body)
     })
     if (!res.ok) throw new Error()
-    await loadPrestations()
+    const updated = await res.json()
+    const idx = prestations.findIndex(p => String(p.id) === String(id))
+    if (idx !== -1) prestations[idx] = updated
+    replaceCardInDOM(id, renderCard(updated))
     closeModal()
     showToast('Prestation mise à jour')
   } catch(e) { showToast('Erreur lors de la sauvegarde', 'error') }
