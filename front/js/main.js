@@ -88,20 +88,8 @@ async function chargerHero(){
     if(!res.ok) return
     const data = await res.json()
     if(data.url){
-      const hero = document.getElementById('hero')
-      if(hero) hero.style.backgroundImage = `url('${data.url}')`
-    }
-  } catch(e){}
-}
-
-async function chargerHero(){
-  try {
-    const res = await fetch(API_URL+'/api/config/hero')
-    if(!res.ok) return
-    const data = await res.json()
-    if(data.url){
-      const hero = document.getElementById('hero')
-      if(hero) hero.style.backgroundImage = `url('${data.url}')`
+      const img = document.getElementById('hero-bg')
+      if(img) img.src = data.url
     }
   } catch(e){}
 }
