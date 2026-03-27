@@ -62,7 +62,7 @@ body{
 .logo-wrap{text-align:center;margin-bottom:2.25rem}
 .logo{font-family:'Cormorant Garamond',serif;font-size:3.2rem;font-weight:300;color:var(--ivoire);letter-spacing:.15em;line-height:1}
 .logo span{color:var(--or)}
-.logo-line{width:60px;height:1px;background:linear-gradient(to right,transparent,var(--or),transparent);margin:.8rem auto 0}
+.logo-line{width:40px;height:1px;background:var(--or);margin:.8rem auto 0}
 .logo-sub{color:rgba(245,240,232,.22);font-size:.62rem;letter-spacing:.32em;text-transform:uppercase;margin-top:.6rem}
 .divider{display:flex;align-items:center;gap:.75rem;margin:1.5rem 0}
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(44,44,44,.9)}
