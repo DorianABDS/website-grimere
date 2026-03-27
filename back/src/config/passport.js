@@ -11,8 +11,10 @@ passport.use(
     (_accessToken, _refreshToken, profile, done) => {
       const email = profile.emails?.[0]?.value
 
-      // ── Whitelist stricte : seul le Gmail de Cédric est autorisé ─────
-      if (email !== process.env.ADMIN_EMAIL) {
+      // ── Whitelist : emails autorisés séparés par une virgule dans ADMIN_EMAILS ─
+      const allowed = (process.env.ADMIN_EMAILS || process.env.ADMIN_EMAIL || '')
+        .split(',').map(e => e.trim()).filter(Boolean)
+      if (!allowed.includes(email)) {
         return done(null, false, { message: 'Accès refusé' })
       }
 
