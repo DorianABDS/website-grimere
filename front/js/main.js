@@ -138,12 +138,33 @@ async function initSite(){
 }
 
 async function chargerGalerie(){
+  // 1. Charger les couvertures par thème
+  try {
+    const resCouv = await fetch(API_URL+'/api/galerie/couvertures')
+    if(resCouv.ok){
+      const couvertures = await resCouv.json()
+      for(const [key, couv] of Object.entries(couvertures)){
+        const card = document.getElementById('tc-'+key)
+        if(card){
+          const img = card.querySelector('img')
+          if(img && couv && couv.url){
+            img.src = couv.url
+            img.alt = couv.alt || key
+          }
+        }
+      }
+    }
+  } catch(e){ /* fallback silencieux : les images statiques de l'HTML restent */ }
+
+  // 2. Charger les photos réelles et mettre à jour themes + compteurs
   try {
     const res = await fetch(API_URL+'/api/galerie')
     if(!res.ok) throw new Error()
     const data = await res.json()
     for(const [key, photos] of Object.entries(data)){
-      if(THEMES_MOCK[key]) THEMES_MOCK[key].photos = photos.map(p=>({src:p.url,alt:p.alt||key}))
+      if(THEMES_MOCK[key] && photos.length > 0){
+        THEMES_MOCK[key].photos = photos.map(p=>({src:p.url,alt:p.alt||key}))
+      }
       const card = document.getElementById('tc-'+key)
       if(card){ const s=card.querySelector('small'); if(s) s.textContent=photos.length+' photo'+(photos.length>1?'s':'') }
     }

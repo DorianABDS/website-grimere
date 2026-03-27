@@ -10,18 +10,30 @@ const THEMES = [
 ]
 
 let allPhotos = {}
+let couverturesData = {}
 let activeTheme = 'mariage'
 let dragSrcIndex = null
 
 async function loadGalerie() {
-  try {
-    const res = await fetch(API + '/api/galerie', { credentials: 'include' })
-    if (!res.ok) throw new Error()
-    allPhotos = await res.json()
-  } catch(e) {
+  // Charger les couvertures en parallèle avec les photos
+  const [resGalerie, resCouv] = await Promise.allSettled([
+    fetch(API + '/api/galerie', { credentials: 'include' }),
+    fetch(API + '/api/galerie/couvertures', { credentials: 'include' })
+  ])
+
+  if (resGalerie.status === 'fulfilled' && resGalerie.value.ok) {
+    allPhotos = await resGalerie.value.json()
+  } else {
     allPhotos = {}
     showToast('Impossible de charger la galerie', 'error')
   }
+
+  if (resCouv.status === 'fulfilled' && resCouv.value.ok) {
+    couverturesData = await resCouv.value.json()
+  } else {
+    couverturesData = {}
+  }
+
   renderTabs()
   renderGrid()
   updatePageSub()
@@ -55,8 +67,32 @@ function renderGrid() {
   const photos = allPhotos[activeTheme] || []
   grid.innerHTML = ''
 
+  // Section couverture (au-dessus de la grille)
+  const couv = couverturesData[activeTheme]
+  const couvertureUrl = couv && couv.url ? couv.url : 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="80"><rect width="120" height="80" fill="%23374151"/><text x="50%25" y="50%25" dominant-baseline="middle" text-anchor="middle" fill="%236b7280" font-size="11">Aucune</text></svg>'
+  const themeLabel = THEMES.find(t => t.key === activeTheme)?.label || activeTheme
+  const coverSection = document.createElement('div')
+  coverSection.style.cssText = 'grid-column:1/-1;margin-bottom:1.5rem'
+  coverSection.innerHTML = `<div class="cover-section" style="display:flex;align-items:center;gap:1rem;padding:1rem;background:var(--ardoise);border-radius:8px;">
+  <img id="cover-preview" src="${couvertureUrl}" alt="Couverture ${themeLabel}"
+       style="width:120px;height:80px;object-fit:cover;border-radius:6px;border:2px solid var(--or)">
+  <div>
+    <div style="font-size:.85rem;color:var(--or);margin-bottom:.5rem">Photo de couverture</div>
+    <div style="font-size:.75rem;color:rgba(245,240,232,.5);margin-bottom:.75rem">Visible sur le site public comme miniature du thème</div>
+    <label class="btn-outline" style="cursor:pointer;font-size:.8rem;padding:.4rem .9rem">
+      Changer la couverture
+      <input type="file" accept="image/*" style="display:none" onchange="changerCouverture('${activeTheme}', this)">
+    </label>
+  </div>
+</div>`
+  grid.appendChild(coverSection)
+
   if (photos.length === 0) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1"><div class="empty-icon">◻</div>Aucune photo dans ce thème</div>`
+    const empty = document.createElement('div')
+    empty.className = 'empty-state'
+    empty.style.cssText = 'grid-column:1/-1'
+    empty.innerHTML = '<div class="empty-icon">◻</div>Aucune photo dans ce thème'
+    grid.appendChild(empty)
     return
   }
 
@@ -210,6 +246,26 @@ async function uploadFiles(files) {
     showToast(`${files.length} photo${files.length > 1 ? 's' : ''} ajoutée${files.length > 1 ? 's' : ''}`)
     await loadGalerie()
   } catch(e) { showToast('Erreur lors de l\'upload', 'error') }
+}
+
+async function changerCouverture(theme, input) {
+  if (!input.files[0]) return
+  const fd = new FormData()
+  fd.append('photo', input.files[0])
+  fd.append('alt', theme)
+  try {
+    const res = await fetch(API + '/api/galerie/couverture/' + theme, {
+      method: 'PUT', credentials: 'include', body: fd
+    })
+    if (!res.ok) throw new Error()
+    const data = await res.json()
+    couverturesData[theme] = { url: data.url, alt: data.alt || theme }
+    const prev = document.getElementById('cover-preview')
+    if (prev) prev.src = data.url
+    if (typeof showToast === 'function') showToast('Couverture mise à jour ✓')
+  } catch(e) {
+    if (typeof showToast === 'function') showToast('Erreur upload couverture', 'error')
+  }
 }
 
 const uploadZone = document.getElementById('upload-zone')
