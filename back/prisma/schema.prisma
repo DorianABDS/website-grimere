@@ -71,6 +71,15 @@ model Message {
   updatedAt  DateTime @updatedAt
 }
 
+// ─── Couvertures de thème ─────────────────────────────────────────────────
+model ThemeCouverture {
+  theme     Theme    @id
+  url       String
+  publicId  String   @default("")
+  alt       String   @default("")
+  updatedAt DateTime @updatedAt
+}
+
 // ─── Enums ────────────────────────────────────────────────────────────────
 enum Theme {
   mariage

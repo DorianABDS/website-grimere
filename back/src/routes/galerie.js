@@ -6,6 +6,55 @@ const cloudinary = require('../config/cloudinary')
 const { upload, convertToWebP } = require('../middleware/upload')
 const { isAdmin } = require('../middleware/auth')
 
+// GET /api/galerie/couvertures — couvertures de thème
+router.get('/couvertures', async (req, res) => {
+  try {
+    const couvertures = await prisma.themeCouverture.findMany()
+    const result = {}
+    couvertures.forEach(c => { result[c.theme] = { url: c.url, publicId: c.publicId, alt: c.alt } })
+    res.json(result)
+  } catch(e) {
+    res.status(500).json({ message: 'Erreur serveur.' })
+  }
+})
+
+// PUT /api/galerie/couverture/:theme — changer la photo de couverture
+router.put('/couverture/:theme', upload.single('photo'), async (req, res) => {
+  try {
+    const { theme } = req.params
+    const themes = ['mariage','naissance','portrait','animalier','culinaire','evenement','bapteme','babyshower']
+    if (!themes.includes(theme)) return res.status(400).json({ message: 'Thème invalide.' })
+    if (!req.file) return res.status(400).json({ message: 'Photo requise.' })
+
+    // Récupérer l'ancienne couverture pour supprimer de Cloudinary
+    const ancienne = await prisma.themeCouverture.findUnique({ where: { theme } })
+    if (ancienne?.publicId) {
+      try { await cloudinary.uploader.destroy(ancienne.publicId) } catch(e) {}
+    }
+
+    // Upload sur Cloudinary
+    const result = await new Promise((resolve, reject) => {
+      const stream = cloudinary.uploader.upload_stream(
+        { folder: `${process.env.CLOUDINARY_FOLDER}/couvertures`, resource_type: 'image' },
+        (err, result) => err ? reject(err) : resolve(result)
+      )
+      stream.end(req.file.buffer)
+    })
+
+    // Mettre à jour en DB
+    const couverture = await prisma.themeCouverture.upsert({
+      where: { theme },
+      update: { url: result.secure_url, publicId: result.public_id, alt: req.body.alt || theme },
+      create: { theme, url: result.secure_url, publicId: result.public_id, alt: req.body.alt || theme }
+    })
+
+    res.json(couverture)
+  } catch(e) {
+    console.error(e)
+    res.status(500).json({ message: 'Erreur upload couverture.' })
+  }
+})
+
 // ── GET /api/galerie — toutes les photos groupées par thème (public) ──────
 router.get('/', async (req, res) => {
   try {
