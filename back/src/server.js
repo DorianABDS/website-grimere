@@ -19,6 +19,9 @@ const statsRoutes       = require('./routes/stats')
 
 const app = express()
 
+// ─── Trust proxy Render ────────────────────────────────────────────────────
+app.set('trust proxy', 1)
+
 // ─── CORS ─────────────────────────────────────────────────────────────────
 app.use(cors({
   origin:      process.env.FRONTEND_URL,
