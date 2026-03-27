@@ -109,10 +109,10 @@ async function changerStatut(id, statut) {
       body: JSON.stringify({ statut })
     })
     if (!res.ok) throw new Error()
-    const updated = await res.json()
     const idx = avis.findIndex(a => String(a.id) === String(id))
-    if (idx !== -1) avis[idx] = updated
-    const data = idx !== -1 ? avis[idx] : { ...updated }
+    if (idx !== -1) avis[idx] = { ...avis[idx], statut }
+    const data = idx !== -1 ? avis[idx] : null
+    if (!data) return
     updateStats()
     const cardEl = document.getElementById(`avis-card-${id}`)
     if (filtreActif !== 'tous' && filtreActif !== statut) {
