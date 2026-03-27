@@ -108,6 +108,23 @@
         <div class="stat-sub" id="stat-presta-nb">— demandes</div>
       </a>
     </div>
+
+    <!-- Personnalisation -->
+    <section style="margin-top:2rem">
+      <h2 style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--or);margin-bottom:1.25rem">Personnalisation</h2>
+      <div style="background:var(--charbon);border:1px solid var(--ardoise);border-radius:12px;padding:1.5rem;display:flex;align-items:center;gap:1.5rem;max-width:500px">
+        <img id="hero-preview" src="" alt="Background hero"
+             style="width:160px;height:90px;object-fit:cover;border-radius:8px;border:2px solid var(--or);background:var(--ardoise);flex-shrink:0">
+        <div>
+          <div style="font-size:.9rem;color:var(--or);margin-bottom:.4rem;font-weight:500">Background Hero</div>
+          <div style="font-size:.78rem;color:rgba(245,240,232,.5);margin-bottom:1rem">Image affichée en arrière-plan de la section principale du site</div>
+          <label style="cursor:pointer;display:inline-block;border:1px solid var(--or);color:var(--or);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;padding:.45rem 1rem;transition:all .3s">
+            Changer l'image
+            <input type="file" accept="image/*" style="display:none" onchange="changerHero(this)">
+          </label>
+        </div>
+      </div>
+    </section>
   </div>
 </div>
 

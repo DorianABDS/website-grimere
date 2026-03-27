@@ -82,8 +82,20 @@ async function submitAvis(btn) {
 }
 
 // ── Chargement initial depuis l'API ──────────────────────────────────────
+async function chargerHero(){
+  try {
+    const res = await fetch(API_URL+'/api/config/hero')
+    if(!res.ok) return
+    const data = await res.json()
+    if(data.url){
+      const hero = document.getElementById('hero')
+      if(hero) hero.style.backgroundImage = `url('${data.url}')`
+    }
+  } catch(e){}
+}
+
 async function initSite(){
-  await Promise.all([chargerGalerie(), chargerPrestations(), chargerAvis()])
+  await Promise.all([chargerGalerie(), chargerPrestations(), chargerAvis(), chargerHero()])
 }
 
 async function chargerGalerie(){

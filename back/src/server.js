@@ -16,6 +16,7 @@ const prestationsRoutes = require('./routes/prestations')
 const avisRoutes        = require('./routes/avis')
 const messagesRoutes    = require('./routes/messages')
 const statsRoutes       = require('./routes/stats')
+const siteConfigRoutes  = require('./routes/siteConfig')
 
 const app = express()
 
@@ -64,6 +65,7 @@ app.use('/api/prestations', prestationsRoutes)
 app.use('/api/avis',        avisRoutes)
 app.use('/api/messages',    messagesRoutes)
 app.use('/api/stats',       statsRoutes)
+app.use('/api/config',      siteConfigRoutes)
 
 // ─── Santé du serveur ─────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => {

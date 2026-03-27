@@ -80,6 +80,13 @@ model ThemeCouverture {
   updatedAt DateTime @updatedAt
 }
 
+// ─── Configuration du site ────────────────────────────────────────────────
+model SiteConfig {
+  cle       String   @id
+  valeur    String
+  updatedAt DateTime @updatedAt
+}
+
 // ─── Enums ────────────────────────────────────────────────────────────────
 enum Theme {
   mariage
