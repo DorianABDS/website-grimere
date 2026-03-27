@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Admin — Galerie</title>
+<title>Admin — Hero</title>
 <meta name="robots" content="noindex, nofollow"/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
@@ -22,9 +22,9 @@
   </div>
   <nav class="nav">
     <a class="nav-item" href="dashboard.html"><span class="nav-icon">◈</span> Dashboard</a>
-    <a class="nav-item" href="hero.html"><span class="nav-icon">◫</span> Hero</a>
+    <a class="nav-item active" href="hero.html"><span class="nav-icon">◫</span> Hero</a>
     <a class="nav-item" href="biographie.html"><span class="nav-icon">◑</span> Biographie</a>
-    <a class="nav-item active" href="galerie.html"><span class="nav-icon">◻</span> Galerie</a>
+    <a class="nav-item" href="galerie.html"><span class="nav-icon">◻</span> Galerie</a>
     <a class="nav-item" href="prestations.html"><span class="nav-icon">◇</span> Prestations</a>
     <a class="nav-item" href="avis.html"><span class="nav-icon">★</span> Avis clients<span id="badge-avis" class="nav-badge" style="background:rgba(251,191,36,.8);display:none"></span></a>
     <a class="nav-item" href="messages.html"><span class="nav-icon">◉</span> Messages<span id="badge-messages" class="nav-badge danger" style="display:none"></span></a>
@@ -50,25 +50,47 @@
   <div class="content">
     <div class="page-header">
       <div>
-        <div class="page-title">Galerie</div>
-        <div class="page-sub" id="page-sub">Chargement…</div>
+        <div class="page-title">Hero</div>
+        <div class="page-sub">Contenu et image de fond de la section principale</div>
       </div>
-      <button class="btn-gold" onclick="document.getElementById('file-input').click()">+ Ajouter des photos</button>
     </div>
 
-    <div class="upload-zone" id="upload-zone">
-      <div class="upload-icon">⬆</div>
-      <div class="upload-text">Glissez vos photos ici ou <strong>parcourez</strong></div>
+    <!-- Section Contenu -->
+    <p class="section-label">Contenu</p>
+    <div style="background:var(--charbon);border:1px solid var(--ardoise);border-radius:12px;padding:1.5rem;max-width:640px">
+      <div class="form-group">
+        <label class="form-label" for="hero-titre">Titre principal</label>
+        <input class="form-input" type="text" id="hero-titre" placeholder="Titre affiché dans le hero"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="hero-sous-titre">Sous-titre</label>
+        <input class="form-input" type="text" id="hero-sous-titre" placeholder="Sous-titre affiché dans le hero"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="hero-description">Description</label>
+        <textarea class="form-input" id="hero-description" rows="4" placeholder="Description affichée dans le hero" style="resize:vertical"></textarea>
+      </div>
+      <button class="btn-primary" id="btn-save-content" onclick="sauvegarderContenu()">Sauvegarder le contenu</button>
     </div>
-    <input type="file" id="file-input" multiple accept="image/*" style="display:none"/>
 
-    <div class="theme-tabs" id="theme-tabs"></div>
-    <p class="reorder-hint">Glissez-déposez les photos pour les réordonner</p>
-    <div class="photo-grid-admin" id="photo-grid"></div>
+    <!-- Section Background -->
+    <p class="section-label" style="margin-top:2rem">Background</p>
+    <div style="background:var(--charbon);border:1px solid var(--ardoise);border-radius:12px;padding:1.5rem;max-width:640px">
+      <div style="margin-bottom:1.25rem">
+        <img id="hero-bg-preview" src="" alt="Background hero actuel"
+             style="width:100%;max-height:260px;object-fit:cover;border-radius:8px;border:2px solid var(--ardoise);background:var(--ardoise);display:block"/>
+      </div>
+      <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+        <label style="cursor:pointer;display:inline-block;border:1px solid var(--or);color:var(--or);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;padding:.5rem 1.2rem;border-radius:4px;transition:all .3s">
+          Changer l'image
+          <input type="file" accept="image/*" style="display:none" onchange="changerBackground(this)"/>
+        </label>
+      </div>
+    </div>
   </div>
 </div>
 
 <script src="js/common.js"></script>
-<script src="js/galerie.js"></script>
+<script src="js/hero.js"></script>
 </body>
 </html>

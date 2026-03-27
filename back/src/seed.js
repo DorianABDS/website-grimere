@@ -129,6 +129,31 @@ async function seed () {
     }
     console.log('  ✅ 8 couvertures insérées')
 
+    // ─── Config par défaut ─────────────────────────────────────────────────────
+    const defaultConfigs = [
+      { cle: 'hero_titre',      valeur: 'Je capture l\'émotion brute' },
+      { cle: 'hero_sous_titre', valeur: 'Photographe professionnel' },
+      { cle: 'hero_description',valeur: 'La lumière fugace, les fragments de vie qui font une histoire.' },
+      { cle: 'bio_titre',       valeur: 'L\'Atelier' },
+      { cle: 'bio_sous_titre',  valeur: 'Photographe professionnel basé à Port-de-Bouc' },
+      { cle: 'bio_description', valeur: 'Passionné par la photographie depuis plus de 7 ans, je capture chaque instant avec authenticité et créativité.' },
+      { cle: 'bio_ind1_val',    valeur: '500+' },
+      { cle: 'bio_ind1_label',  valeur: 'Séances réalisées' },
+      { cle: 'bio_ind2_val',    valeur: '7' },
+      { cle: 'bio_ind2_label',  valeur: 'Années d\'expérience' },
+      { cle: 'bio_ind3_val',    valeur: '100%' },
+      { cle: 'bio_ind3_label',  valeur: 'Passion' },
+      { cle: 'bio_citation',    valeur: 'La photographie est l\'art de figer l\'éternité dans un instant.' },
+    ]
+
+    for(const config of defaultConfigs) {
+      const exists = await prisma.siteConfig.findUnique({ where: { cle: config.cle } })
+      if(!exists) {
+        await prisma.siteConfig.create({ data: config })
+        console.log(`  ✅ Config ${config.cle} créée`)
+      }
+    }
+
     console.log('👉 Tu peux maintenant lancer : npm run dev')
   } catch (err) {
     console.error('❌ Erreur seed :', err)

@@ -94,8 +94,39 @@ async function chargerHero(){
   } catch(e){}
 }
 
+async function chargerHeroContent(){
+  try {
+    const res = await fetch(API_URL+'/api/config/hero-content')
+    if(!res.ok) return
+    const d = await res.json()
+    if(d.hero_titre) { const el = document.getElementById('hero-titre'); if(el) el.textContent = d.hero_titre }
+    if(d.hero_sous_titre) { const el = document.getElementById('hero-sous-titre'); if(el) el.textContent = d.hero_sous_titre }
+    if(d.hero_description) { const el = document.getElementById('hero-description'); if(el) el.textContent = d.hero_description }
+  } catch(e){}
+}
+
+async function chargerBiographie(){
+  try {
+    const res = await fetch(API_URL+'/api/config/biographie')
+    if(!res.ok) return
+    const d = await res.json()
+    const set = (id, val) => { if(val) { const el = document.getElementById(id); if(el) el.textContent = val } }
+    set('bio-titre', d.bio_titre)
+    set('bio-sous-titre', d.bio_sous_titre)
+    set('bio-description', d.bio_description)
+    set('bio-ind1-val', d.bio_ind1_val)
+    set('bio-ind1-label', d.bio_ind1_label)
+    set('bio-ind2-val', d.bio_ind2_val)
+    set('bio-ind2-label', d.bio_ind2_label)
+    set('bio-ind3-val', d.bio_ind3_val)
+    set('bio-ind3-label', d.bio_ind3_label)
+    set('bio-citation', d.bio_citation)
+    if(d.bio_photo) { const img = document.getElementById('bio-photo'); if(img) img.src = d.bio_photo }
+  } catch(e){}
+}
+
 async function initSite(){
-  await Promise.all([chargerGalerie(), chargerPrestations(), chargerAvis(), chargerHero()])
+  await Promise.all([chargerGalerie(), chargerPrestations(), chargerAvis(), chargerHero(), chargerHeroContent(), chargerBiographie()])
 }
 
 async function initAvecRetry(){
