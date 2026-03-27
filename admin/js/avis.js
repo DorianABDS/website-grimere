@@ -110,8 +110,9 @@ async function changerStatut(id, statut) {
     })
     if (!res.ok) throw new Error()
     const updated = await res.json()
-    const idx = avis.findIndex(a => a.id === id)
+    const idx = avis.findIndex(a => String(a.id) === String(id))
     if (idx !== -1) avis[idx] = updated
+    const data = idx !== -1 ? avis[idx] : { ...updated }
     updateStats()
     const cardEl = document.getElementById(`avis-card-${id}`)
     if (filtreActif !== 'tous' && filtreActif !== statut) {
@@ -121,7 +122,10 @@ async function changerStatut(id, statut) {
         grid.innerHTML = '<div class="loading" style="grid-column:1/-1">Aucun avis dans cette catégorie.</div>'
       }
     } else {
-      if (cardEl) cardEl.outerHTML = renderCard(updated)
+      if (cardEl) {
+        cardEl.insertAdjacentHTML('afterend', renderCard(data))
+        cardEl.remove()
+      }
     }
     showToast(`Avis ${statut === 'APPROUVE' ? 'approuvé' : 'refusé'}`)
   } catch(e) { showToast('Erreur lors de la mise à jour', 'error') }
@@ -132,7 +136,7 @@ async function supprimerAvis(id) {
   try {
     const res = await fetch(`${API}/api/avis/${id}`, { method: 'DELETE', credentials: 'include' })
     if (!res.ok) throw new Error()
-    avis = avis.filter(a => a.id !== id)
+    avis = avis.filter(a => String(a.id) !== String(id))
     const cardEl = document.getElementById(`avis-card-${id}`)
     if (cardEl) cardEl.remove()
     const grid = document.getElementById('avis-grid')

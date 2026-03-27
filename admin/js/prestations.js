@@ -50,6 +50,13 @@ function renderCard(p) {
   `
 }
 
+function replaceCardInDOM(id, html) {
+  const cardEl = document.getElementById(`card-${id}`)
+  if (!cardEl) return
+  cardEl.insertAdjacentHTML('afterend', html)
+  cardEl.remove()
+}
+
 async function toggleStatut(id) {
   const btn = document.getElementById(`btn-toggle-${id}`)
   if (btn) btn.disabled = true
@@ -57,11 +64,11 @@ async function toggleStatut(id) {
     const res = await fetch(`${API}/api/prestations/${id}/statut`, { method: 'PATCH', credentials: 'include' })
     if (!res.ok) throw new Error()
     const updated = await res.json()
-    const idx = prestations.findIndex(p => p.id === id)
+    const idx = prestations.findIndex(p => String(p.id) === String(id))
     if (idx !== -1) prestations[idx] = updated
-    const cardEl = document.getElementById(`card-${id}`)
-    if (cardEl) cardEl.outerHTML = renderCard(updated)
-    showToast(`Prestation ${updated.actif ? 'activée' : 'désactivée'}`)
+    const data = idx !== -1 ? prestations[idx] : { ...updated }
+    replaceCardInDOM(id, renderCard(data))
+    showToast(`Prestation ${data.actif ? 'activée' : 'désactivée'}`)
     const actifs = prestations.filter(p => p.actif).length
     document.getElementById('page-sub').textContent = `${prestations.length} forfait${prestations.length > 1 ? 's' : ''} — ${actifs} actif${actifs > 1 ? 's' : ''}`
   } catch(e) {
@@ -71,7 +78,7 @@ async function toggleStatut(id) {
 }
 
 function openModal(id) {
-  const p = prestations.find(p => p.id === id)
+  const p = prestations.find(p => String(p.id) === String(id))
   if (!p) return
   document.getElementById('edit-id').value = p.id
   document.getElementById('edit-titre').value = p.titre || ''
@@ -108,10 +115,10 @@ async function savePrestation(e) {
     })
     if (!res.ok) throw new Error()
     const updated = await res.json()
-    const idx = prestations.findIndex(p => p.id === id)
+    const idx = prestations.findIndex(p => String(p.id) === String(id))
     if (idx !== -1) prestations[idx] = updated
-    const cardEl = document.getElementById(`card-${id}`)
-    if (cardEl) cardEl.outerHTML = renderCard(updated)
+    const data = idx !== -1 ? prestations[idx] : { ...updated }
+    replaceCardInDOM(id, renderCard(data))
     closeModal()
     showToast('Prestation mise à jour')
   } catch(e) { showToast('Erreur lors de la sauvegarde', 'error') }
