@@ -57,10 +57,13 @@ app.use(session({
   resave:            false,
   saveUninitialized: false,
   cookie: {
-    secure:   process.env.NODE_ENV === 'production', // HTTPS uniquement en prod
+    secure:   process.env.NODE_ENV === 'production',
     httpOnly: true,
     maxAge:   1000 * 60 * 60 * 24,                  // 24h
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    sameSite: 'lax',                                 // Compatible Safari/iOS/Android
+    domain:   process.env.NODE_ENV === 'production'  // Partagé entre api. et le domaine racine
+                ? '.cedric-grimere-photographie.fr'
+                : undefined,
   },
 }))
 
