@@ -35,7 +35,17 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
 // ─── Session stockée dans PostgreSQL ──────────────────────────────────────
-const pgPool = new Pool({ connectionString: process.env.DATABASE_URL })
+const pgPool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  max:              5,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 5000,
+})
+
+// Empêche les erreurs de connexion orphelines de crasher le serveur
+pgPool.on('error', (err) => {
+  console.error('pgPool error (session store):', err.message)
+})
 
 app.use(session({
   store: new pgSession({
@@ -68,14 +78,25 @@ app.use('/api/messages',    messagesRoutes)
 app.use('/api/stats',       statsRoutes)
 app.use('/api/config',      siteConfigRoutes)
 
-// ─── Santé du serveur ─────────────────────────────────────────────────────
-app.get('/api/health', (_req, res) => {
-  res.json({
-    status:    'OK',
-    message:   `Serveur ${process.env.PHOTOGRAPHE_NOM || 'Photographe'} opérationnel`,
-    timestamp: new Date().toISOString(),
-    env:       process.env.NODE_ENV,
-  })
+// ─── Santé du serveur (teste aussi la DB) ─────────────────────────────────
+app.get('/api/health', async (_req, res) => {
+  try {
+    await pgPool.query('SELECT 1')
+    res.json({
+      status:    'OK',
+      message:   `Serveur ${process.env.PHOTOGRAPHE_NOM || 'Photographe'} opérationnel`,
+      timestamp: new Date().toISOString(),
+      env:       process.env.NODE_ENV,
+      db:        'OK',
+    })
+  } catch (err) {
+    res.status(503).json({
+      status:    'ERROR',
+      message:   'Base de données non disponible',
+      timestamp: new Date().toISOString(),
+      db:        'ERROR',
+    })
+  }
 })
 
 // ─── Route inconnue ───────────────────────────────────────────────────────

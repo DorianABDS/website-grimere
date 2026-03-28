@@ -42,7 +42,7 @@ async function handleLogin(e) {
   for (let i = 0; i < 10; i++) {
     try {
       if (i > 0) setBtn(SPINNER + ` Réveil du serveur… (${i * 3}s)`, true)
-      const res = await fetch(API + '/api/prestations', { signal: AbortSignal.timeout(5000) })
+      const res = await fetch(API + '/api/health', { signal: AbortSignal.timeout(5000) })
       if (res.ok) { ok = true; break }
     } catch(err) {}
     await new Promise(r => setTimeout(r, 3000))

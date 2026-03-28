@@ -48,3 +48,25 @@ services:
         sync: false
       - key: PHOTOGRAPHE_INSTAGRAM
         sync: false
+
+  # ── Cron job : ping toutes les 5 min pour garder le backend éveillé ────────
+  - type: cron
+    name: cedric-grimere-keepalive
+    runtime: node
+    schedule: "*/5 * * * *"
+    buildCommand: "echo ok"
+    startCommand: >
+      node -e "
+        const https = require('https');
+        const url = process.env.BACKEND_URL + '/api/health';
+        https.get(url, (r) => {
+          console.log('[keepalive]', r.statusCode, url);
+          process.exit(0);
+        }).on('error', (e) => {
+          console.error('[keepalive] erreur:', e.message);
+          process.exit(1);
+        });
+      "
+    envVars:
+      - key: BACKEND_URL
+        sync: false
