@@ -15,11 +15,6 @@ passport.use(
       const allowed = (process.env.ADMIN_EMAILS || process.env.ADMIN_EMAIL || '')
         .split(',').map(e => e.trim()).filter(Boolean)
 
-      // LOG TEMPORAIRE — à supprimer après diagnostic
-      console.log('[OAuth] email reçu :', email)
-      console.log('[OAuth] emails autorisés :', allowed)
-      console.log('[OAuth] accès accordé :', allowed.includes(email))
-
       if (!allowed.includes(email)) {
         return done(null, false, { message: 'Accès refusé' })
       }

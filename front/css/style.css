@@ -72,11 +72,12 @@ body{background:var(--noir);color:var(--ivoire);font-family:'DM Sans',sans-serif
 .theme-card:hover .theme-label small,.theme-card.active .theme-label small{opacity:1}
 .grid4{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
 @media(min-width:1024px){.grid4{grid-template-columns:repeat(4,1fr)}}
-.photo-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.4rem;margin-top:1.5rem}
-@media(min-width:640px){.photo-grid{grid-template-columns:repeat(3,1fr)}}
-.photo-grid button{overflow:hidden;aspect-ratio:1;border:none;cursor:pointer;padding:0;background:none}
-.photo-grid button img{width:100%;height:100%;object-fit:cover;transition:transform .5s;display:block}
-.photo-grid button:hover img{transform:scale(1.05)}
+.photo-grid{columns:2;column-gap:.4rem;margin-top:1.5rem}
+@media(min-width:640px){.photo-grid{columns:3}}
+@media(min-width:1024px){.photo-grid{columns:4}}
+.photo-grid button{break-inside:avoid;display:block;width:100%;margin-bottom:.4rem;overflow:hidden;border:none;cursor:pointer;padding:0;background:none}
+.photo-grid button img{width:100%;height:auto;display:block;transition:transform .5s}
+.photo-grid button:hover img{transform:scale(1.03)}
 /* Lightbox */
 .lb-overlay{position:fixed;inset:0;background:rgba(13,13,13,.96);z-index:1000;display:flex;align-items:center;justify-content:center;animation:fadeIn .3s ease}
 .lb-btn{background:none;border:none;cursor:pointer;padding:.75rem;transition:color .3s;font-size:1.8rem;color:rgba(245,240,232,.5);font-family:'DM Sans',sans-serif}
