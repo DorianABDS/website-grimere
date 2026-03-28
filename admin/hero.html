@@ -60,15 +60,15 @@
     <div style="background:var(--charbon);border:1px solid var(--ardoise);border-radius:12px;padding:1.5rem;max-width:640px">
       <div class="form-group">
         <label class="form-label" for="hero-titre">Titre principal <span style="color:rgba(245,240,232,.3);font-size:.6rem;letter-spacing:.1em">— sauts de ligne = nouvelles lignes sur le site</span></label>
-        <textarea class="form-input" id="hero-titre" rows="3" placeholder="Chaque instant&#10;mérite&#10;d'être éternel." style="resize:vertical"></textarea>
+        <textarea class="form-input" id="hero-titre" rows="3" style="resize:vertical"></textarea>
       </div>
       <div class="form-group">
         <label class="form-label" for="hero-sous-titre">Sous-titre</label>
-        <input class="form-input" type="text" id="hero-sous-titre" placeholder="Sous-titre affiché dans le hero"/>
+        <input class="form-input" type="text" id="hero-sous-titre"/>
       </div>
       <div class="form-group">
         <label class="form-label" for="hero-description">Description</label>
-        <textarea class="form-input" id="hero-description" rows="4" placeholder="Description affichée dans le hero" style="resize:vertical"></textarea>
+        <textarea class="form-input" id="hero-description" rows="4" style="resize:vertical"></textarea>
       </div>
       <button class="btn-primary" id="btn-save-content" onclick="sauvegarderContenu()">Sauvegarder le contenu</button>
     </div>
