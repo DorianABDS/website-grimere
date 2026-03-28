@@ -54,32 +54,4 @@ async function loadStats() {
   }
 }
 
-async function chargerHeroAdmin() {
-  try {
-    const res = await fetch(API + '/api/config/hero', { credentials: 'include' })
-    if(!res.ok) return
-    const data = await res.json()
-    const prev = document.getElementById('hero-preview')
-    if(prev && data.url) prev.src = data.url
-  } catch(e){}
-}
-
-async function changerHero(input) {
-  if(!input.files[0]) return
-  const fd = new FormData()
-  fd.append('photo', input.files[0])
-  try {
-    const res = await fetch(API + '/api/config/hero', {
-      method: 'PUT', credentials: 'include', body: fd
-    })
-    if(!res.ok) throw new Error()
-    const data = await res.json()
-    const prev = document.getElementById('hero-preview')
-    if(prev) prev.src = data.url
-    showToast('Background hero mis à jour ✓')
-  } catch(e) {
-    showToast('Erreur upload hero', 'error')
-  }
-}
-
-checkSession().then(u => { if (u) { loadStats(); chargerHeroAdmin() } })
+checkSession().then(u => { if (u) { loadStats() } })
