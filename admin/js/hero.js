@@ -1,5 +1,3 @@
-const API = (window.ADMIN_CONFIG && window.ADMIN_CONFIG.API_URL) || 'https://api.cedric-grimere-photographie.fr'
-
 async function init() {
   // Charger le contenu hero
   try {

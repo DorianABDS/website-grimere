@@ -1,4 +1,3 @@
-const API = (window.ADMIN_CONFIG && window.ADMIN_CONFIG.API_URL) || 'https://api.cedric-grimere-photographie.fr'
 let photoFile = null
 
 async function init() {
