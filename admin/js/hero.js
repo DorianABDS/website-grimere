@@ -39,9 +39,9 @@ async function sauvegarderContenu() {
       body: JSON.stringify(body)
     })
     if(!res.ok) throw new Error()
-    showToast('Contenu hero mis à jour ✓')
+    showToast('Contenu sauvegardé', 'success', 'Titre, sous-titre et description mis à jour')
   } catch(e) {
-    showToast('Erreur sauvegarde', 'error')
+    showToast('Échec de la sauvegarde', 'error', 'Vérifiez votre connexion et réessayez')
   } finally {
     btn.disabled = false
     btn.textContent = 'Sauvegarder le contenu'
@@ -62,9 +62,9 @@ async function changerBackground(input) {
       prev.onload = () => { prev.style.opacity = '1'; if(ph) ph.style.display = 'none' }
       prev.src = d.url
     }
-    showToast('Background mis à jour ✓')
+    showToast('Background mis à jour', 'success', 'La nouvelle image est en ligne')
   } catch(e) {
-    showToast('Erreur upload', 'error')
+    showToast('Échec de l\'upload', 'error', 'L\'image n\'a pas pu être envoyée')
   }
 }
 

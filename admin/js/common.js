@@ -43,12 +43,30 @@ function closeSidebar() {
   document.getElementById('overlay').classList.remove('show')
 }
 
-function showToast(text, type = 'success') {
+function showToast(title, type = 'success', sub = '') {
+  // Retirer tout toast existant
+  document.querySelectorAll('.toast').forEach(el => el.remove())
+
+  const icon = type === 'success' ? '✓' : '✕'
   const t = document.createElement('div')
   t.className = `toast ${type}`
-  t.innerHTML = `<span>${type === 'success' ? '✓' : '✕'}</span> ${text}`
+  t.innerHTML = `
+    <div class="toast-icon">${icon}</div>
+    <div class="toast-text">
+      <div class="toast-title">${title}</div>
+      ${sub ? `<div class="toast-sub">${sub}</div>` : ''}
+    </div>`
   document.body.appendChild(t)
-  setTimeout(() => { t.style.animation = 'fadeOut .3s ease forwards'; setTimeout(() => t.remove(), 300) }, 2500)
+
+  // Entrée animée
+  requestAnimationFrame(() => { requestAnimationFrame(() => { t.classList.add('show') }) })
+
+  // Sortie après délai
+  const delay = type === 'error' ? 4000 : 3000
+  setTimeout(() => {
+    t.style.animation = 'fadeOut .3s ease forwards'
+    setTimeout(() => t.remove(), 300)
+  }, delay)
 }
 
 function escHtml(str) {

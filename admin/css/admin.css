@@ -206,11 +206,19 @@ body{background:var(--noir);font-family:'DM Sans',sans-serif;font-weight:300;col
 /* ── Overlay & Toast ── */
 .overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:45}
 .overlay.show{display:block}
-.toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--charbon);border:1px solid var(--ardoise);padding:.85rem 1.25rem;font-size:.8rem;color:var(--ivoire);z-index:200;display:flex;align-items:center;gap:.65rem;animation:slideIn .3s ease;max-width:300px}
-.toast.success{border-color:rgba(74,222,128,.35);color:#86efac}
-.toast.error{border-color:rgba(239,68,68,.35);color:#fca5a5}
-@keyframes slideIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeOut{from{opacity:1}to{opacity:0}}
+.toast{position:fixed;top:1.5rem;left:50%;transform:translateX(-50%) translateY(-80px);background:var(--charbon);border:1px solid var(--ardoise);padding:1rem 1.75rem;font-size:.82rem;color:var(--ivoire);z-index:999;display:flex;align-items:center;gap:.8rem;box-shadow:0 8px 32px rgba(0,0,0,.45);min-width:260px;max-width:420px;transition:transform .35s cubic-bezier(.34,1.56,.64,1),opacity .35s ease;opacity:0;letter-spacing:.03em}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+.toast-icon{font-size:1.1rem;flex-shrink:0;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.85rem}
+.toast.success{border-color:rgba(74,222,128,.4);background:rgba(17,34,17,.95)}
+.toast.success .toast-icon{background:rgba(74,222,128,.15);color:#4ade80}
+.toast.success .toast-text{color:#86efac}
+.toast.error{border-color:rgba(239,68,68,.4);background:rgba(34,17,17,.95)}
+.toast.error .toast-icon{background:rgba(239,68,68,.15);color:#f87171}
+.toast.error .toast-text{color:#fca5a5}
+.toast-text{flex:1}
+.toast-title{font-weight:500;margin-bottom:.15rem;font-size:.83rem}
+.toast-sub{font-size:.72rem;opacity:.7}
+@keyframes fadeOut{from{opacity:1;transform:translateX(-50%) translateY(0)}to{opacity:0;transform:translateX(-50%) translateY(-20px)}}
 
 /* ── Responsive ── */
 @media(max-width:768px){

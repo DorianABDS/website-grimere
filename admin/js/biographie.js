@@ -41,12 +41,12 @@ async function sauvegarder() {
     if(photoFile) fd.append('photo', photoFile)
     const res = await fetch(API + '/api/config/biographie', { method: 'PUT', credentials: 'include', body: fd })
     if(!res.ok) throw new Error()
-    showToast('Biographie mise à jour ✓')
+    showToast('Biographie sauvegardée', 'success', 'Textes, indicateurs et photo mis à jour')
     photoFile = null
     const input = document.getElementById('bio-photo-input')
     if(input) input.value = ''
   } catch(e) {
-    showToast('Erreur sauvegarde', 'error')
+    showToast('Échec de la sauvegarde', 'error', 'Vérifiez votre connexion et réessayez')
   } finally {
     btn.disabled = false
     btn.textContent = 'Sauvegarder tout'
