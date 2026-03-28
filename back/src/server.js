@@ -61,9 +61,6 @@ app.use(session({
     httpOnly: true,
     maxAge:   1000 * 60 * 60 * 24,                  // 24h
     sameSite: 'lax',                                 // Compatible Safari/iOS/Android
-    domain:   process.env.NODE_ENV === 'production'  // Partagé entre api. et le domaine racine
-                ? '.cedric-grimere-photographie.fr'
-                : undefined,
   },
 }))
 
