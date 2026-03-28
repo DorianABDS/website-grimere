@@ -69,4 +69,4 @@ services:
       "
     envVars:
       - key: BACKEND_URL
-        sync: false
+        value: https://cedric-grimere-backend.onrender.com
