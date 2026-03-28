@@ -1,64 +1,86 @@
+// API est défini dans common.js — ne pas redéclarer ici
+
 let photoFile = null
 
 async function init() {
   try {
     const res = await fetch(API + '/api/config/biographie', { credentials: 'include' })
+    if (!res.ok) return
     const d = await res.json()
-    const set = (id, val) => { if(val) { const el = document.getElementById(id); if(el) el.value = val } }
-    set('bio-titre', d.bio_titre)
-    set('bio-sous-titre', d.bio_sous_titre)
+
+    const set = (id, val) => {
+      if (!val) return
+      const el = document.getElementById(id)
+      if (el) el.value = val
+    }
+
+    set('bio-titre',       d.bio_titre)
+    set('bio-sous-titre',  d.bio_sous_titre)
     set('bio-description', d.bio_description)
-    set('bio-citation', d.bio_citation)
-    set('bio-ind1-val', d.bio_ind1_val)
-    set('bio-ind1-label', d.bio_ind1_label)
-    set('bio-ind2-val', d.bio_ind2_val)
-    set('bio-ind2-label', d.bio_ind2_label)
-    set('bio-ind3-val', d.bio_ind3_val)
-    set('bio-ind3-label', d.bio_ind3_label)
-    if(d.bio_photo) {
+    set('bio-citation',    d.bio_citation)
+    set('bio-ind1-val',    d.bio_ind1_val)
+    set('bio-ind1-label',  d.bio_ind1_label)
+    set('bio-ind2-val',    d.bio_ind2_val)
+    set('bio-ind2-label',  d.bio_ind2_label)
+    set('bio-ind3-val',    d.bio_ind3_val)
+    set('bio-ind3-label',  d.bio_ind3_label)
+
+    if (d.bio_photo) {
       const prev = document.getElementById('bio-photo-preview')
       const ph   = document.getElementById('bio-photo-placeholder')
-      if(prev) {
-        prev.onload = () => { prev.style.opacity = '1'; if(ph) ph.style.display = 'none' }
+      if (prev) {
+        prev.onload = () => { prev.style.opacity = '1'; if (ph) ph.style.display = 'none' }
         prev.src = d.bio_photo
       }
     }
-  } catch(e){}
+  } catch(e) {}
 }
 
 async function sauvegarder() {
   const btn = document.getElementById('btn-save')
-  btn.disabled = true
-  btn.textContent = 'Sauvegarde...'
+  if (!btn) return
+  btn.disabled    = true
+  btn.textContent = 'Sauvegarde…'
   try {
-    const fd = new FormData()
-    const fields = ['bio-titre','bio-sous-titre','bio-description','bio-citation','bio-ind1-val','bio-ind1-label','bio-ind2-val','bio-ind2-label','bio-ind3-val','bio-ind3-label']
-    fields.forEach(id => {
+    const fd     = new FormData()
+    const champs = [
+      'bio-titre', 'bio-sous-titre', 'bio-description', 'bio-citation',
+      'bio-ind1-val', 'bio-ind1-label',
+      'bio-ind2-val', 'bio-ind2-label',
+      'bio-ind3-val', 'bio-ind3-label'
+    ]
+    champs.forEach(id => {
       const el = document.getElementById(id)
-      if(el) fd.append(id.replace(/-/g,'_'), el.value)
+      if (el) fd.append(id.replace(/-/g, '_'), el.value)
     })
-    if(photoFile) fd.append('photo', photoFile)
-    const res = await fetch(API + '/api/config/biographie', { method: 'PUT', credentials: 'include', body: fd })
-    if(!res.ok) throw new Error()
-    showToast('Biographie sauvegardée', 'success', 'Textes, indicateurs et photo mis à jour')
+    if (photoFile) fd.append('photo', photoFile)
+
+    const res = await fetch(API + '/api/config/biographie', {
+      method: 'PUT',
+      credentials: 'include',
+      body: fd
+    })
+    if (!res.ok) throw new Error('Erreur ' + res.status)
+
+    showToast('Biographie mise à jour', 'success', 'Les modifications sont en ligne sur le site')
     photoFile = null
     const input = document.getElementById('bio-photo-input')
-    if(input) input.value = ''
+    if (input) input.value = ''
   } catch(e) {
-    showToast('Échec de la sauvegarde', 'error', 'Vérifiez votre connexion et réessayez')
+    showToast('Échec de la sauvegarde', 'error', e.message || 'Vérifiez votre connexion')
   } finally {
-    btn.disabled = false
+    btn.disabled    = false
     btn.textContent = 'Sauvegarder tout'
   }
 }
 
 function previewPhoto(input) {
-  if(!input.files[0]) return
-  photoFile = input.files[0]
+  if (!input.files[0]) return
+  photoFile      = input.files[0]
   const prev = document.getElementById('bio-photo-preview')
   const ph   = document.getElementById('bio-photo-placeholder')
-  if(prev) {
-    prev.onload = () => { prev.style.opacity = '1'; if(ph) ph.style.display = 'none' }
+  if (prev) {
+    prev.onload = () => { prev.style.opacity = '1'; if (ph) ph.style.display = 'none' }
     prev.src = URL.createObjectURL(photoFile)
   }
 }
