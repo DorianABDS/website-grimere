@@ -15,7 +15,11 @@ async function init() {
     const res = await fetch(API + '/api/config/hero', { credentials: 'include' })
     const d = await res.json()
     const prev = document.getElementById('hero-bg-preview')
-    if(prev && d.url) prev.src = d.url
+    const ph   = document.getElementById('hero-bg-placeholder')
+    if(prev && d.url) {
+      prev.onload = () => { prev.style.opacity = '1'; if(ph) ph.style.display = 'none' }
+      prev.src = d.url
+    }
   } catch(e){}
 }
 
@@ -53,7 +57,11 @@ async function changerBackground(input) {
     if(!res.ok) throw new Error()
     const d = await res.json()
     const prev = document.getElementById('hero-bg-preview')
-    if(prev) prev.src = d.url
+    const ph   = document.getElementById('hero-bg-placeholder')
+    if(prev && d.url) {
+      prev.onload = () => { prev.style.opacity = '1'; if(ph) ph.style.display = 'none' }
+      prev.src = d.url
+    }
     showToast('Background mis à jour ✓')
   } catch(e) {
     showToast('Erreur upload', 'error')

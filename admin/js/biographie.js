@@ -18,7 +18,11 @@ async function init() {
     set('bio-ind3-label', d.bio_ind3_label)
     if(d.bio_photo) {
       const prev = document.getElementById('bio-photo-preview')
-      if(prev) prev.src = d.bio_photo
+      const ph   = document.getElementById('bio-photo-placeholder')
+      if(prev) {
+        prev.onload = () => { prev.style.opacity = '1'; if(ph) ph.style.display = 'none' }
+        prev.src = d.bio_photo
+      }
     }
   } catch(e){}
 }
@@ -53,7 +57,11 @@ function previewPhoto(input) {
   if(!input.files[0]) return
   photoFile = input.files[0]
   const prev = document.getElementById('bio-photo-preview')
-  if(prev) prev.src = URL.createObjectURL(photoFile)
+  const ph   = document.getElementById('bio-photo-placeholder')
+  if(prev) {
+    prev.onload = () => { prev.style.opacity = '1'; if(ph) ph.style.display = 'none' }
+    prev.src = URL.createObjectURL(photoFile)
+  }
 }
 
 checkSession().then(() => { loadBadges(); init() })

@@ -45,6 +45,11 @@ body{background:var(--noir);font-family:'DM Sans',sans-serif;font-weight:300;col
 /* ── Boutons ── */
 .btn-gold{background:var(--or);color:var(--noir);border:none;padding:.65rem 1.4rem;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .2s}
 .btn-gold:hover{background:var(--or-pale)}
+.btn-primary{background:var(--or);color:var(--noir);border:none;padding:.7rem 2rem;font-size:.75rem;letter-spacing:.14em;text-transform:uppercase;cursor:pointer;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .2s;display:inline-block}
+.btn-primary:hover{background:var(--or-pale)}
+.btn-primary:disabled{opacity:.45;cursor:not-allowed}
+.btn-upload{cursor:pointer;display:inline-block;border:1px solid var(--or);color:var(--or);font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;padding:.55rem 1.25rem;transition:all .2s;font-family:'DM Sans',sans-serif}
+.btn-upload:hover{background:rgba(201,168,76,.08)}
 .btn-outline-sm{background:none;border:1px solid var(--ardoise);color:rgba(245,240,232,.6);padding:.5rem 1rem;font-size:.72rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
 .btn-outline-sm:hover{border-color:var(--or);color:var(--or)}
 .btn-approve{background:rgba(74,222,128,.1);border:1px solid rgba(74,222,128,.3);color:#86efac;padding:.3rem .75rem;font-size:.68rem;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s}
