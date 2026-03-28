@@ -1,4 +1,6 @@
-const API = (window.ADMIN_CONFIG && window.ADMIN_CONFIG.API_URL) || 'http://localhost:5000'
+// Utiliser window.API (propriété globale) plutôt que const API
+// pour éviter tout conflit de redéclaration avec les autres scripts
+window.API = (window.ADMIN_CONFIG && window.ADMIN_CONFIG.API_URL) || 'https://api.cedric-grimere-photographie.fr'
 
 async function checkSession() {
   try {
