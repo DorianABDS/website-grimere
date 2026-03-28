@@ -227,6 +227,10 @@ body{background:var(--noir);font-family:'DM Sans',sans-serif;font-weight:300;col
   .main{margin-left:0}
   .mobile-header{display:flex}
   .msg-layout{grid-template-columns:1fr;height:auto}
-  .content{overflow:auto}
+  .content{overflow:auto;padding-bottom:max(2rem, env(safe-area-inset-bottom))}
   .charts-row{grid-template-columns:1fr}
+
+  /* Barre de navigation téléphone (Android/iOS) */
+  .sidebar-profile{padding-bottom:max(1rem, env(safe-area-inset-bottom))}
+  .mobile-header{padding-top:max(.85rem, env(safe-area-inset-top))}
 }
