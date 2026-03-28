@@ -1,33 +1,27 @@
 const API = (window.ADMIN_CONFIG && window.ADMIN_CONFIG.API_URL) || 'https://api.cedric-grimere-photographie.fr'
 
 async function init() {
-  // Charger le contenu hero
   try {
-    const res = await fetch(API + '/api/config/hero-content', { credentials: 'include' })
-    const d = await res.json()
-    if(d.hero_titre) document.getElementById('hero-titre').value = d.hero_titre
-    if(d.hero_sous_titre) document.getElementById('hero-sous-titre').value = d.hero_sous_titre
-    if(d.hero_description) document.getElementById('hero-description').value = d.hero_description
-  } catch(e){}
-
-  // Charger le background
-  try {
-    const res = await fetch(API + '/api/config/hero', { credentials: 'include' })
-    const d = await res.json()
-    const prev = document.getElementById('hero-bg-preview')
-    if(prev && d.url) prev.src = d.url
+    const [heroContent, heroBg] = await Promise.all([
+      fetch(API + '/api/config/hero-content', { credentials: 'include' }).then(r => r.json()),
+      fetch(API + '/api/config/hero', { credentials: 'include' }).then(r => r.json())
+    ])
+    if(heroContent.hero_titre) document.getElementById('hero-titre').textContent = heroContent.hero_titre
+    if(heroContent.hero_sous_titre) document.getElementById('hero-sous-titre').textContent = heroContent.hero_sous_titre
+    if(heroContent.hero_description) document.getElementById('hero-description').textContent = heroContent.hero_description
+    if(heroBg.url) document.getElementById('hero-bg').src = heroBg.url
   } catch(e){}
 }
 
-async function sauvegarderContenu() {
-  const btn = document.getElementById('btn-save-content')
-  btn.disabled = true
+async function sauvegarder() {
+  const btn = document.getElementById('btn-save')
   btn.textContent = 'Sauvegarde...'
+  btn.disabled = true
   try {
     const body = {
-      hero_titre: document.getElementById('hero-titre').value,
-      hero_sous_titre: document.getElementById('hero-sous-titre').value,
-      hero_description: document.getElementById('hero-description').value,
+      hero_titre: document.getElementById('hero-titre').textContent.trim(),
+      hero_sous_titre: document.getElementById('hero-sous-titre').textContent.trim(),
+      hero_description: document.getElementById('hero-description').textContent.trim(),
     }
     const res = await fetch(API + '/api/config/hero-content', {
       method: 'PUT', credentials: 'include',
@@ -35,12 +29,12 @@ async function sauvegarderContenu() {
       body: JSON.stringify(body)
     })
     if(!res.ok) throw new Error()
-    showToast('Contenu hero mis à jour ✓')
+    showToast('Hero sauvegardé ✓')
   } catch(e) {
     showToast('Erreur sauvegarde', 'error')
   } finally {
+    btn.textContent = 'Sauvegarder'
     btn.disabled = false
-    btn.textContent = 'Sauvegarder le contenu'
   }
 }
 
@@ -52,8 +46,7 @@ async function changerBackground(input) {
     const res = await fetch(API + '/api/config/hero', { method: 'PUT', credentials: 'include', body: fd })
     if(!res.ok) throw new Error()
     const d = await res.json()
-    const prev = document.getElementById('hero-bg-preview')
-    if(prev) prev.src = d.url
+    document.getElementById('hero-bg').src = d.url
     showToast('Background mis à jour ✓')
   } catch(e) {
     showToast('Erreur upload', 'error')

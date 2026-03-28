@@ -8,8 +8,61 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="../css/style.css"/>
 <link rel="stylesheet" href="css/admin.css"/>
-<script src="config.js"></script>
+<style>
+.preview-bio {
+  border: 2px solid rgba(201,168,76,.3);
+  border-radius: 8px;
+  margin-bottom: 2rem;
+  overflow: hidden;
+  position: relative;
+}
+.preview-bio [contenteditable] {
+  outline: none;
+  cursor: text;
+  border-bottom: 1px dashed rgba(201,168,76,.4);
+  transition: border-color .2s;
+  display: inline-block;
+}
+.preview-bio [contenteditable]:hover,
+.preview-bio [contenteditable]:focus {
+  border-bottom-color: var(--or);
+  background: rgba(201,168,76,.05);
+}
+.edit-badge {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: rgba(201,168,76,.15);
+  border: 1px solid rgba(201,168,76,.3);
+  color: var(--or);
+  font-size: .65rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  padding: .3rem .7rem;
+  border-radius: 4px;
+  z-index: 10;
+  font-family: 'DM Sans', sans-serif;
+}
+.btn-save-fixed {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--or);
+  color: var(--noir);
+  border: none;
+  padding: .85rem 2rem;
+  font-size: .8rem;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 600;
+  z-index: 1000;
+  box-shadow: 0 4px 20px rgba(201,168,76,.3);
+}
+</style>
 </head>
 <body>
 
@@ -55,63 +108,58 @@
       </div>
     </div>
 
-    <!-- Section Textes -->
-    <p class="section-label">Textes</p>
-    <div style="background:var(--charbon);border:1px solid var(--ardoise);border-radius:12px;padding:1.5rem;max-width:640px">
-      <div class="form-group">
-        <label class="form-label" for="bio-titre">Titre</label>
-        <input class="form-input" type="text" id="bio-titre" placeholder="Titre de la section biographie"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="bio-sous-titre">Sous-titre</label>
-        <input class="form-input" type="text" id="bio-sous-titre" placeholder="Sous-titre de la section biographie"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="bio-description">Description</label>
-        <textarea class="form-input" id="bio-description" rows="5" placeholder="Texte de présentation biographique" style="resize:vertical"></textarea>
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="bio-citation">Citation</label>
-        <textarea class="form-input" id="bio-citation" rows="3" placeholder="Citation mise en avant" style="resize:vertical"></textarea>
-      </div>
+    <!-- Bandeau info -->
+    <div style="background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);border-radius:8px;padding:.75rem 1.25rem;margin-bottom:1.5rem;font-size:.8rem;color:var(--or);font-family:'DM Sans',sans-serif;letter-spacing:.05em">
+      Cliquez sur les textes pour les modifier. Cliquez sur la photo pour la changer.
     </div>
 
-    <!-- Section Indicateurs -->
-    <p class="section-label" style="margin-top:2rem">Indicateurs</p>
-    <div style="background:var(--charbon);border:1px solid var(--ardoise);border-radius:12px;padding:1.5rem;max-width:640px">
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem">
-        <input class="form-input" type="text" id="bio-ind1-val" placeholder="Valeur (ex: 10+)"/>
-        <input class="form-input" type="text" id="bio-ind1-label" placeholder="Label (ex: Ans d'expérience)"/>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:.75rem">
-        <input class="form-input" type="text" id="bio-ind2-val" placeholder="Valeur (ex: 500+)"/>
-        <input class="form-input" type="text" id="bio-ind2-label" placeholder="Label (ex: Clients satisfaits)"/>
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
-        <input class="form-input" type="text" id="bio-ind3-val" placeholder="Valeur (ex: 50+)"/>
-        <input class="form-input" type="text" id="bio-ind3-label" placeholder="Label (ex: Projets réalisés)"/>
-      </div>
-    </div>
-
-    <!-- Section Photo de profil -->
-    <p class="section-label" style="margin-top:2rem">Photo de profil</p>
-    <div style="background:var(--charbon);border:1px solid var(--ardoise);border-radius:12px;padding:1.5rem;max-width:640px">
-      <div style="margin-bottom:1.25rem">
-        <img id="bio-photo-preview" src="" alt="Photo de profil actuelle"
-             style="width:160px;height:160px;object-fit:cover;border-radius:50%;border:2px solid var(--ardoise);background:var(--ardoise);display:block"/>
-      </div>
-      <label style="cursor:pointer;display:inline-block;border:1px solid var(--or);color:var(--or);font-size:.75rem;letter-spacing:.15em;text-transform:uppercase;padding:.5rem 1.2rem;border-radius:4px;transition:all .3s">
-        Changer la photo
-        <input type="file" accept="image/*" id="bio-photo-input" style="display:none" onchange="previewPhoto(this)"/>
-      </label>
-    </div>
-
-    <!-- Bouton Sauvegarder -->
-    <div style="margin-top:2rem;max-width:640px">
-      <button class="btn-primary" id="btn-save" onclick="sauvegarder()">Sauvegarder tout</button>
+    <!-- Preview Biographie -->
+    <div class="preview-bio">
+      <span class="edit-badge">✎ Aperçu — cliquez pour modifier</span>
+      <section style="padding:6rem 0;background:var(--charbon);position:relative;overflow:hidden">
+        <div class="container">
+          <div class="grid2">
+            <!-- Colonne 1 : Photo -->
+            <div class="portrait-wrap" style="position:relative">
+              <img id="bio-photo" src="" alt="Photo biographie" style="width:100%;height:auto;display:block">
+              <label style="position:absolute;bottom:1rem;left:50%;transform:translateX(-50%);background:rgba(13,13,13,.85);border:1px solid rgba(201,168,76,.5);color:var(--or);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;padding:.5rem 1rem;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif">
+                Changer la photo
+                <input type="file" accept="image/*" style="display:none" onchange="previewPhoto(this)">
+              </label>
+            </div>
+            <!-- Colonne 2 : Texte -->
+            <div>
+              <span id="bio-sous-titre" class="tag" contenteditable="true">Mon histoire</span>
+              <h2 id="bio-titre" contenteditable="true" class="h2s"></h2>
+              <p id="bio-description" class="body-sm" contenteditable="true"></p>
+              <!-- Indicateurs -->
+              <div style="display:flex;gap:2rem;margin:2rem 0">
+                <div>
+                  <div id="bio-ind1-val" contenteditable="true" style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;color:var(--or)"></div>
+                  <div id="bio-ind1-label" contenteditable="true" class="tag"></div>
+                </div>
+                <div>
+                  <div id="bio-ind2-val" contenteditable="true" style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;color:var(--or)"></div>
+                  <div id="bio-ind2-label" contenteditable="true" class="tag"></div>
+                </div>
+                <div>
+                  <div id="bio-ind3-val" contenteditable="true" style="font-family:'Cormorant Garamond',serif;font-size:2.5rem;color:var(--or)"></div>
+                  <div id="bio-ind3-label" contenteditable="true" class="tag"></div>
+                </div>
+              </div>
+              <!-- Citation -->
+              <blockquote style="border-left:2px solid var(--or);padding-left:1.5rem;margin:1.5rem 0">
+                <p id="bio-citation" class="body-sm" contenteditable="true" style="font-style:italic"></p>
+              </blockquote>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 </div>
+
+<button class="btn-save-fixed" id="btn-save" onclick="sauvegarder()">Sauvegarder</button>
 
 <script src="js/common.js"></script>
 <script src="js/biographie.js"></script>
