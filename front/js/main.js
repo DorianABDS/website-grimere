@@ -99,9 +99,10 @@ async function chargerHeroContent(){
     const res = await fetch(API_URL+'/api/config/hero-content')
     if(!res.ok) return
     const d = await res.json()
-    if(d.hero_titre) { const el = document.getElementById('hero-titre'); if(el) el.textContent = d.hero_titre }
+    const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    if(d.hero_titre)      { const el = document.getElementById('hero-titre');      if(el) el.innerHTML = esc(d.hero_titre).replace(/\n/g,'<br>') }
     if(d.hero_sous_titre) { const el = document.getElementById('hero-sous-titre'); if(el) el.textContent = d.hero_sous_titre }
-    if(d.hero_description) { const el = document.getElementById('hero-description'); if(el) el.textContent = d.hero_description }
+    if(d.hero_description){ const el = document.getElementById('hero-description'); if(el) el.textContent = d.hero_description }
   } catch(e){}
 }
 
@@ -110,8 +111,9 @@ async function chargerBiographie(){
     const res = await fetch(API_URL+'/api/config/biographie')
     if(!res.ok) return
     const d = await res.json()
+    const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     const set = (id, val) => { if(val) { const el = document.getElementById(id); if(el) el.textContent = val } }
-    set('bio-titre', d.bio_titre)
+    if(d.bio_titre) { const el = document.getElementById('bio-titre'); if(el) el.innerHTML = esc(d.bio_titre).replace(/\n/g,'<br>') }
     set('bio-sous-titre', d.bio_sous_titre)
     set('bio-description', d.bio_description)
     set('bio-ind1-val', d.bio_ind1_val)

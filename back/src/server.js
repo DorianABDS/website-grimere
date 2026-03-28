@@ -17,6 +17,7 @@ const avisRoutes        = require('./routes/avis')
 const messagesRoutes    = require('./routes/messages')
 const statsRoutes       = require('./routes/stats')
 const siteConfigRoutes  = require('./routes/siteConfig')
+const seedSiteConfig    = require('./seedSiteConfig')
 
 const app = express()
 
@@ -91,11 +92,12 @@ app.use((err, _req, res, _next) => {
 // ─── Démarrage ────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 5000
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`\n🚀 Serveur démarré → http://localhost:${PORT}`)
   console.log(`🗄️  Base de données  → PostgreSQL (Prisma)`)
   console.log(`🌍 Environnement    → ${process.env.NODE_ENV}`)
   console.log(`🔗 Frontend autorisé → ${process.env.FRONTEND_URL}\n`)
+  await seedSiteConfig()
 })
 
 // ─── Fermeture propre ─────────────────────────────────────────────────────
