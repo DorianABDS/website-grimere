@@ -5,7 +5,7 @@
   --success:rgba(74,222,128,.8);--warning:rgba(251,191,36,.8);--danger:rgba(239,68,68,.8);
   --sidebar:240px;
 }
-html,body{height:100%;overflow:hidden}
+html,body{height:100dvh;overflow:hidden}
 body{background:var(--noir);font-family:'DM Sans',sans-serif;font-weight:300;color:var(--ivoire);display:flex}
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-track{background:var(--noir)}
@@ -13,7 +13,7 @@ body{background:var(--noir);font-family:'DM Sans',sans-serif;font-weight:300;col
 ::-webkit-scrollbar-thumb:hover{background:var(--or)}
 
 /* ── Sidebar ── */
-.sidebar{width:var(--sidebar);min-height:100vh;background:var(--charbon);border-right:1px solid var(--ardoise);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;transition:transform .3s;flex-shrink:0}
+.sidebar{width:var(--sidebar);height:100dvh;background:var(--charbon);border-right:1px solid var(--ardoise);display:flex;flex-direction:column;position:fixed;top:0;left:0;z-index:50;transition:transform .3s;flex-shrink:0}
 .sidebar-logo{padding:1.75rem 1.5rem 1.5rem;border-bottom:1px solid var(--ardoise)}
 .sidebar-logo .cg{font-family:'Cormorant Garamond',serif;font-size:1.75rem;font-weight:300;letter-spacing:.12em;color:var(--ivoire)}
 .sidebar-logo .cg span{color:var(--or)}
@@ -34,7 +34,7 @@ body{background:var(--noir);font-family:'DM Sans',sans-serif;font-weight:300;col
 .logout-btn:hover{color:var(--danger)}
 
 /* ── Layout ── */
-.main{margin-left:var(--sidebar);flex:1;height:100vh;overflow-y:auto;display:flex;flex-direction:column}
+.main{margin-left:var(--sidebar);flex:1;height:100dvh;overflow-y:auto;display:flex;flex-direction:column}
 .mobile-header{display:none;align-items:center;justify-content:space-between;padding:.85rem 1.25rem;border-bottom:1px solid var(--ardoise);background:var(--charbon);position:sticky;top:0;z-index:40}
 .menu-btn{background:none;border:none;color:var(--ivoire);font-size:1.2rem;cursor:pointer;line-height:1}
 .content{padding:2rem;flex:1}
@@ -230,7 +230,8 @@ body{background:var(--noir);font-family:'DM Sans',sans-serif;font-weight:300;col
   .content{overflow:auto;padding-bottom:max(2rem, env(safe-area-inset-bottom))}
   .charts-row{grid-template-columns:1fr}
 
-  /* Barre de navigation téléphone (Android/iOS) */
+  /* Zones sécurisées (encoche iPhone, barre gesture Android) */
   .sidebar-profile{padding-bottom:max(1rem, env(safe-area-inset-bottom))}
+  .content{padding-bottom:max(2rem, env(safe-area-inset-bottom))}
   .mobile-header{padding-top:max(.85rem, env(safe-area-inset-top))}
 }
