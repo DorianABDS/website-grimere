@@ -1,5 +1,13 @@
 require('dotenv').config()
 
+// ─── Protection contre les crashes non gérés ──────────────────────────────
+process.on('uncaughtException', (err) => {
+  console.error('⚠️  uncaughtException (non-fatal):', err.message)
+})
+process.on('unhandledRejection', (reason) => {
+  console.error('⚠️  unhandledRejection (non-fatal):', reason)
+})
+
 const express    = require('express')
 const cors       = require('cors')
 const session    = require('express-session')
@@ -119,6 +127,15 @@ app.listen(PORT, async () => {
   console.log(`🌍 Environnement    → ${process.env.NODE_ENV}`)
   console.log(`🔗 Frontend autorisé → ${process.env.FRONTEND_URL}\n`)
   await seedSiteConfig()
+
+  // ─── Keep-alive Neon DB (évite le scale-to-zero après 5min) ──────────────
+  setInterval(async () => {
+    try {
+      await pgPool.query('SELECT 1')
+    } catch (e) {
+      console.error('⚠️  DB keep-alive error:', e.message)
+    }
+  }, 4 * 60 * 1000) // toutes les 4 minutes
 })
 
 // ─── Fermeture propre ─────────────────────────────────────────────────────
