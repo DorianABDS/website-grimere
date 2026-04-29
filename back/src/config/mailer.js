@@ -60,7 +60,7 @@ const layout = (body) => `
 const sendAdminNotification = async ({ nom, email, prestation, message }) => {
   await transporter.sendMail({
     from:    process.env.MAIL_FROM,
-    to:      process.env.MAIL_USER,
+    to:      process.env.ADMIN_EMAIL,
     subject: `📩 Nouveau message de ${nom}${prestation ? ` — ${prestation}` : ''}`,
     html: layout(`
       <h2 style="color:#c9a84c;font-family:Georgia,serif;font-weight:300;font-size:1.5rem;margin:0 0 1.5rem">
@@ -129,7 +129,7 @@ const sendAvisNotification = async ({ nom, note, commentaire, prestation }) => {
   const etoiles = '★'.repeat(note) + '☆'.repeat(5 - note)
   await transporter.sendMail({
     from:    process.env.MAIL_FROM,
-    to:      process.env.MAIL_USER,
+    to:      process.env.ADMIN_EMAIL,
     subject: `⭐ Nouvel avis à modérer — ${nom} (${note}/5)`,
     html: layout(`
       <h2 style="color:#c9a84c;font-family:Georgia,serif;font-weight:300;font-size:1.5rem;margin:0 0 1.5rem">
