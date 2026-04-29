@@ -4,7 +4,7 @@ const { Resend } = require('resend')
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 const FROM    = process.env.MAIL_FROM || `Cédric Grimere Photographie <onboarding@resend.dev>`
-const ADMIN   = process.env.ADMIN_EMAIL
+const ADMIN   = process.env.NOTIFICATION_EMAIL
 
 // ─── Template HTML commun ─────────────────────────────────────────────────
 const layout = (body) => `
