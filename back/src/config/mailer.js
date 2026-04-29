@@ -1,19 +1,10 @@
-const nodemailer = require('nodemailer')
+const { Resend } = require('resend')
 
-// ─── Transporteur SMTP ────────────────────────────────────────────────────
-const transporter = nodemailer.createTransport({
-  host:   process.env.MAIL_HOST,
-  port:   Number(process.env.MAIL_PORT),
-  secure: false,
-  auth: {
-    user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS,
-  },
-  tls: {
-    ciphers: 'SSLv3',
-    rejectUnauthorized: false,
-  },
-})
+// ─── Client Resend ────────────────────────────────────────────────────────
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+const FROM    = process.env.MAIL_FROM || `Cédric Grimere Photographie <onboarding@resend.dev>`
+const ADMIN   = process.env.ADMIN_EMAIL
 
 // ─── Template HTML commun ─────────────────────────────────────────────────
 const layout = (body) => `
@@ -44,7 +35,7 @@ const layout = (body) => `
         <tr><td style="padding:1.25rem;text-align:center">
           <p style="color:#999;font-size:.72rem;margin:0">
             📍 ${process.env.PHOTOGRAPHE_VILLE} &nbsp;·&nbsp;
-            <a href="mailto:${process.env.MAIL_USER}" style="color:#c9a84c;text-decoration:none">${process.env.MAIL_USER}</a>
+            <a href="mailto:${ADMIN}" style="color:#c9a84c;text-decoration:none">${ADMIN}</a>
             &nbsp;·&nbsp;
             <a href="${process.env.PHOTOGRAPHE_INSTAGRAM}" style="color:#c9a84c;text-decoration:none">@${(process.env.PHOTOGRAPHE_INSTAGRAM||'').replace('https://instagram.com/','')}</a>
           </p>
@@ -58,9 +49,9 @@ const layout = (body) => `
 
 // ─── 1. Notification à Cédric : nouveau message reçu ──────────────────────
 const sendAdminNotification = async ({ nom, email, prestation, message }) => {
-  await transporter.sendMail({
-    from:    process.env.MAIL_FROM,
-    to:      process.env.ADMIN_EMAIL,
+  await resend.emails.send({
+    from:    FROM,
+    to:      ADMIN,
     subject: `📩 Nouveau message de ${nom}${prestation ? ` — ${prestation}` : ''}`,
     html: layout(`
       <h2 style="color:#c9a84c;font-family:Georgia,serif;font-weight:300;font-size:1.5rem;margin:0 0 1.5rem">
@@ -99,8 +90,8 @@ const sendAdminNotification = async ({ nom, email, prestation, message }) => {
 
 // ─── 2. Confirmation automatique au client ─────────────────────────────────
 const sendClientConfirmation = async ({ nom, email, prestation }) => {
-  await transporter.sendMail({
-    from:    process.env.MAIL_FROM,
+  await resend.emails.send({
+    from:    FROM,
     to:      email,
     subject: `Votre demande a bien été reçue — ${process.env.PHOTOGRAPHE_NOM} Photographe`,
     html: layout(`
@@ -127,9 +118,9 @@ const sendClientConfirmation = async ({ nom, email, prestation }) => {
 // ─── 3. Notification : nouvel avis à modérer ──────────────────────────────
 const sendAvisNotification = async ({ nom, note, commentaire, prestation }) => {
   const etoiles = '★'.repeat(note) + '☆'.repeat(5 - note)
-  await transporter.sendMail({
-    from:    process.env.MAIL_FROM,
-    to:      process.env.ADMIN_EMAIL,
+  await resend.emails.send({
+    from:    FROM,
+    to:      ADMIN,
     subject: `⭐ Nouvel avis à modérer — ${nom} (${note}/5)`,
     html: layout(`
       <h2 style="color:#c9a84c;font-family:Georgia,serif;font-weight:300;font-size:1.5rem;margin:0 0 1.5rem">
