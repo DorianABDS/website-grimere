@@ -127,15 +127,6 @@ app.listen(PORT, async () => {
   console.log(`🌍 Environnement    → ${process.env.NODE_ENV}`)
   console.log(`🔗 Frontend autorisé → ${process.env.FRONTEND_URL}\n`)
   await seedSiteConfig()
-
-  // ─── Keep-alive Neon DB (évite le scale-to-zero après 5min) ──────────────
-  setInterval(async () => {
-    try {
-      await pgPool.query('SELECT 1')
-    } catch (e) {
-      console.error('⚠️  DB keep-alive error:', e.message)
-    }
-  }, 4 * 60 * 1000) // toutes les 4 minutes
 })
 
 // ─── Fermeture propre ─────────────────────────────────────────────────────
