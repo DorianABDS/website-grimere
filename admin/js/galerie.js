@@ -14,7 +14,7 @@ let couverturesData = {}
 let activeTheme = 'mariage'
 let dragSrcIndex = null
 
-async function loadGalerie() {
+async function loadGalerie(retry = 3) {
   // Charger les couvertures en parallèle avec les photos
   const [resGalerie, resCouv] = await Promise.allSettled([
     fetch(API + '/api/galerie', { credentials: 'include' }),
@@ -24,6 +24,10 @@ async function loadGalerie() {
   if (resGalerie.status === 'fulfilled' && resGalerie.value.ok) {
     allPhotos = await resGalerie.value.json()
   } else {
+    if (retry > 0) {
+      await new Promise(r => setTimeout(r, 2000))
+      return loadGalerie(retry - 1)
+    }
     allPhotos = {}
     showToast('Impossible de charger la galerie', 'error')
   }
