@@ -45,7 +45,7 @@ app.use(express.urlencoded({ extended: true }))
 // ─── Session stockée dans PostgreSQL ──────────────────────────────────────
 const pgPool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  max:              5,
+  max:              3,
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 5000,
 })
